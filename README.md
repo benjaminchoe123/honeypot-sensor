@@ -15,45 +15,45 @@ _Last updated 2026-11-06 · 1 day of collection · updated automatically every d
 
 | Metric | Value |
 |---|---|
-| Attacker sessions | 33 |
-| Unique attacker IPs | 13 |
-| Countries | 9 |
-| Successful logins | 32 |
-| Hands-on sessions | 26 |
-| Distinct attack campaigns | 8 (largest: 15 sessions) |
+| Attacker sessions | 41 |
+| Unique attacker IPs | 20 |
+| Countries | 13 |
+| Successful logins | 40 |
+| Hands-on sessions | 30 |
+| Distinct attack campaigns | 10 (largest: 3 source IPs) |
 | Malware samples captured | 1 |
 | MITRE ATT&CK techniques observed | 6 |
-| Scanner connections filtered out | 17 |
+| Scanner connections filtered out | 27 |
 
 **Attack-depth funnel**
 
 | Tier | Sessions | Meaning |
 |---|---|---|
-| Scan | 17 | Connected, never tried to log in |
+| Scan | 27 | Connected, never tried to log in |
 | Login attempt | 1 | Tried credentials, never got in |
-| Access | 6 | Logged in, did nothing |
-| Hands-on | 26 | Logged in and ran commands or downloaded files |
+| Access | 10 | Logged in, did nothing |
+| Hands-on | 30 | Logged in and ran commands or downloaded files |
 
 **ATT&CK techniques observed** (sessions)
 
-- T1078 Valid Accounts (32)
-- T1059.004 Unix Shell (26)
-- T1082 System Information Discovery (6)
-- T1222.002 Linux File Permissions Modification (3)
+- T1078 Valid Accounts (40)
+- T1059.004 Unix Shell (30)
+- T1082 System Information Discovery (8)
+- T1222.002 Linux File Permissions Modification (4)
 - T1105 Ingress Tool Transfer (1)
 - T1070 Indicator Removal (1)
 
 **Top source countries** (location of the attacking machine, usually an infected device)
 
 - United States (17)
+- India (4)
 - South Korea (4)
-- India (3)
-- Belgium (3)
-- Chile (2)
+- Belgium (4)
+- China (3)
 
 **Most-tried credentials**
 
-- admin / admin (10)
+- admin / admin (12)
 - root / admin (3)
 - support / support (2)
 - admin / changeme (1)
@@ -64,7 +64,7 @@ _Last updated 2026-11-06 · 1 day of collection · updated automatically every d
 | Date | Attacker sessions | Attacker IPs | Hands-on | Countries | Samples |
 |---|---|---|---|---|---|
 | 2026-11-05 | 5 | 4 | 4 | 3 | 1 |
-| 2026-11-06 | 33 | 13 | 26 | 9 | 1 |
+| 2026-11-06 | 41 | 20 | 30 | 13 | 1 |
 
 </details>
 <!-- STATS:END -->
