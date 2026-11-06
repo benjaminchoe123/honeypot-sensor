@@ -1,0 +1,4 @@
+# Private: VM address and your own IPs. Never commit.
+config.local.json
+__pycache__/
+*.pyc
