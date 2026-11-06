@@ -22,8 +22,8 @@ _Last updated 2026-11-05 · 1 day(s) of collection · updated automatically ever
 
 **ATT&CK techniques observed** (sessions)
 
-- T1078 Valid Accounts (4)
 - T1059.004 Unix Shell (4)
+- T1078 Valid Accounts (4)
 - T1082 System Information Discovery (2)
 - T1105 Ingress Tool Transfer (1)
 - T1222.002 Linux File Permissions Modification (1)
