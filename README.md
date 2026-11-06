@@ -7,43 +7,54 @@ come from live data and update automatically every day.
 ## Live stats
 
 <!-- STATS:START -->
-_Last updated 2026-11-05 · 1 day(s) of collection · updated automatically every day._
+_Last updated 2026-11-05 · 1 day of collection · updated automatically every day._
 
 | Metric | Value |
 |---|---|
-| Attacker sessions | 8 |
+| Attacker sessions | 5 |
 | Unique attacker IPs | 4 |
-| Countries | 2 |
-| Login attempts / successful | 4 / 4 |
-| Sessions with post-login commands | 4 |
+| Countries | 3 |
+| Successful logins | 5 |
+| Hands-on sessions | 4 |
 | Malware samples captured | 1 |
 | MITRE ATT&CK techniques observed | 6 |
-| Telnet / SSH sessions | 8 / 0 |
+| Scanner connections filtered out | 6 |
+
+**Attack-depth funnel**
+
+| Tier | Sessions | Meaning |
+|---|---|---|
+| Scan | 6 | Connected, never tried to log in |
+| Login attempt | 0 | Tried credentials, never got in |
+| Access | 1 | Logged in, did nothing |
+| Hands-on | 4 | Logged in and ran commands or downloaded files |
 
 **ATT&CK techniques observed** (sessions)
 
+- T1078 Valid Accounts (5)
 - T1059.004 Unix Shell (4)
-- T1078 Valid Accounts (4)
 - T1082 System Information Discovery (2)
-- T1105 Ingress Tool Transfer (1)
 - T1222.002 Linux File Permissions Modification (1)
 - T1070 Indicator Removal (1)
+- T1105 Ingress Tool Transfer (1)
 
 **Top source countries** (location of the attacking machine, usually an infected device)
 
-- India (5)
-- United States (3)
+- India (3)
+- United States (1)
+- The Netherlands (1)
 
 **Most-tried credentials**
 
 - admin / admin (3)
 - admin / changeme (1)
+- root / admin (1)
 
 <details><summary>Daily growth</summary>
 
-| Date | Sessions | Unique IPs | Countries | Samples |
-|---|---|---|---|---|
-| 2026-11-05 | 8 | 4 | 2 | 1 |
+| Date | Attacker sessions | Attacker IPs | Hands-on | Countries | Samples |
+|---|---|---|---|---|---|
+| 2026-11-05 | 5 | 4 | 4 | 3 | 1 |
 
 </details>
 <!-- STATS:END -->

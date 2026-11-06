@@ -1,2 +1,2 @@
-date,days,events,sessions,ips,countries,ssh,telnet,login_attempts,logins_ok,cmd_sessions,samples,techniques
-2026-11-05,1,163,8,4,2,0,8,4,4,4,1,6
+date,days,events,connections,all_ips,scans,login_attempt,access,hands_on,attacker_sessions,attacker_ips,countries,ssh,telnet,login_attempts,logins_ok,samples,techniques,interesting
+2026-11-05,1,172,11,6,6,0,1,4,5,4,3,1,4,5,5,1,6,0
