@@ -20,6 +20,7 @@ _Last updated 2026-11-06 · 1 day of collection · updated automatically every d
 | Countries | 9 |
 | Successful logins | 32 |
 | Hands-on sessions | 26 |
+| Distinct attack campaigns | 8 (largest: 15 sessions) |
 | Malware samples captured | 1 |
 | MITRE ATT&CK techniques observed | 6 |
 | Scanner connections filtered out | 17 |
