@@ -3,5 +3,6 @@
   "own_ips": ["YOUR.HOME.IP", "YOUR.SCHOOL.IP"],
   "log_dir": "C:\\path\\to\\local\\honeypot-logs",
   "vault_dir": "C:\\path\\to\\obsidian-vault",
-  "ssh_key": "C:\\Users\\you\\.ssh\\honeypot"
+  "ssh_key": "C:\\Users\\you\\.ssh\\honeypot",
+  "backup_dir": "C:\\Users\\you\\OneDrive\\Backups\\honeypot"
 }

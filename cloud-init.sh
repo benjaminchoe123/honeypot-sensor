@@ -49,7 +49,7 @@ sudo -u cowrie -H bash -euxc "
   mkdir -p ${COWRIE_HOME} && cd ${COWRIE_HOME}
   python3 -m venv cowrie-env
   cowrie-env/bin/python -m pip install --upgrade pip
-  cowrie-env/bin/python -m pip install cowrie
+  cowrie-env/bin/python -m pip install cowrie==3.1.5   # pinned: the version verified on sensor-01
   [ -f etc/cowrie.cfg ] || cowrie-env/bin/cowrie init
 "
 

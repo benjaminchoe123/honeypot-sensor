@@ -125,9 +125,26 @@ def test_campaign_id_groups_bots_that_only_differ_by_download_server():
     assert stats.campaign_id({"commands": []}) is None
 
 
-def test_summary_counts_campaigns(tmp_path):
-    m = stats.summarize(sessions_from(tmp_path), geo={}, today="2026-11-06")
-    assert m["campaigns"] == 1 and m["top_campaign"] == 1
+def test_campaign_size_counts_ips_not_retries(tmp_path):
+    script = ["enable", "system", "shell", "sh"]
+    retry = {f"r{i}": {"ip": "203.0.113.7", "commands": script} for i in range(15)}  # one stuck bot
+    two = {f"t{i}": {"ip": f"203.0.113.{20 + i}", "commands": ["uname -a"]} for i in range(2)}
+    sessions = {k: {"protocol": "telnet", "start": "2026-11-06T05:46:33Z", "login_ok": True,
+                    "failed_logins": 0, "creds": [("root", "x")], "downloads": [], "events": 5, **v}
+                for k, v in {**retry, **two}.items()}
+    m = stats.summarize(sessions, geo={}, today="2026-11-06")
+    assert m["campaigns"] == 2
+    assert m["top_campaign_ips"] == 2  # the 15-session retry loop is 1 device, not 15
+
+
+def test_backup_zips_all_logs(tmp_path):
+    import zipfile
+    write_log(tmp_path, sample_events())
+    write_log(tmp_path, sample_events(), name="cowrie.json.2026-11-05")
+    target = stats.backup_logs(tmp_path, tmp_path / "backup")
+    with zipfile.ZipFile(target) as zf:
+        assert sorted(zf.namelist()) == ["cowrie.json", "cowrie.json.2026-11-05"]
+    assert not (tmp_path / "backup" / "cowrie-logs.zip.tmp").exists()
 
 
 def test_is_stale():

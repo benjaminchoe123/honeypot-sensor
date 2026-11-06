@@ -37,6 +37,7 @@ import sys
 import tarfile
 import time
 import urllib.request
+import zipfile
 from collections import Counter
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -75,6 +76,7 @@ class Config:
     log_dir: Path
     vault_dir: Path
     key: str
+    backup_dir: Path | None = None
 
     @property
     def stats_page(self) -> Path:
@@ -101,7 +103,23 @@ def load_config(path: Path = REPO / "config.local.json") -> Config:
         log_dir=Path(raw["log_dir"]),
         vault_dir=Path(raw["vault_dir"]),
         key=raw.get("ssh_key", str(Path.home() / ".ssh" / "honeypot")),
+        backup_dir=Path(raw["backup_dir"]) if raw.get("backup_dir") else None,
     )
+
+
+def backup_logs(log_dir: Path, backup_dir: Path) -> Path:
+    """Zip every cowrie.json* into one archive in a cloud-synced folder (e.g. OneDrive).
+
+    Overwritten each run; the sync service's version history keeps older copies.
+    Written to a temp name first, so a crash never leaves a half-written backup.
+    """
+    backup_dir.mkdir(parents=True, exist_ok=True)
+    target, tmp = backup_dir / "cowrie-logs.zip", backup_dir / "cowrie-logs.zip.tmp"
+    with zipfile.ZipFile(tmp, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        for path in sorted(log_dir.glob("cowrie.json*")):
+            zf.write(path, path.name)
+    tmp.replace(target)
+    return target
 
 
 def pull_logs(cfg: Config) -> None:
@@ -262,7 +280,12 @@ def summarize(sessions: dict, geo: dict, today: str | None = None) -> dict:
     first = datetime.fromisoformat(starts[0].replace("Z", "+00:00")) if starts else None
     techs = Counter(t for s in ss for t in techniques(s, brute))
     samples = {d["sha256"]: d["url"] for s in ss for d in s["downloads"] if d["sha256"]}
-    campaigns = Counter(c for s in ss if (c := campaign_id(s)))
+    # Size campaigns by unique IPs, not sessions: one stuck bot retrying 15 times is one device.
+    campaign_ips: dict[str, set] = {}
+    for s in ss:
+        if c := campaign_id(s):
+            campaign_ips.setdefault(c, set()).add(s["ip"])
+    campaigns = Counter({c: len(ips) for c, ips in campaign_ips.items()})
     return {
         "date": today or f"{datetime.now():%Y-%m-%d}",
         "days": (datetime.now(UTC) - first).days + 1 if first else 0,
@@ -274,7 +297,7 @@ def summarize(sessions: dict, geo: dict, today: str | None = None) -> dict:
         "access": tiers["access"],
         "hands_on": tiers["hands-on"],
         "campaigns": len(campaigns),
-        "top_campaign": max(campaigns.values(), default=0),
+        "top_campaign_ips": max(campaigns.values(), default=0),
         "attacker_sessions": len(attackers),
         "attacker_ips": len(attacker_ips),
         "countries": len({geo[ip] for ip in attacker_ips if ip in geo}),
@@ -297,7 +320,7 @@ def summarize(sessions: dict, geo: dict, today: str | None = None) -> dict:
 
 
 HISTORY_FIELDS = ["date", "days", "events", "connections", "all_ips", "scans", "login_attempt",
-                  "access", "hands_on", "campaigns", "top_campaign", "attacker_sessions", "attacker_ips",
+                  "access", "hands_on", "campaigns", "top_campaign_ips", "attacker_sessions", "attacker_ips",
                   "countries", "ssh", "telnet", "login_attempts", "logins_ok", "samples", "techniques", "interesting"]
 
 
@@ -380,9 +403,8 @@ def resume_bullets(m: dict) -> list:
         f"classifying sessions by attack depth.",
         f"- Clustered {plural(m['hands_on'], 'hands-on session')} into "
         f"{plural(m['campaigns'], 'distinct attack campaign')} by command fingerprint (largest: "
-        f"{plural(m['top_campaign'], 'session')}) and mapped behavior to "
-        f"{plural(m['techniques'], 'MITRE ATT&CK technique')}; activity was dominated by Mirai-style "
-        f"Telnet botnet loaders.",
+        f"{plural(m['top_campaign_ips'], 'source IP')}) and mapped behavior to "
+        f"{plural(m['techniques'], 'MITRE ATT&CK technique')}, including Mirai-style Telnet botnet loaders.",
         f"- Built a tested Python pipeline (pytest, CI) that collects, classifies and publishes metrics "
         f"daily from {m['events']:,} logged events; [after writing one: documented the largest "
         f"campaigns in case studies with detection and prevention recommendations].",
@@ -415,7 +437,7 @@ def render_resume(m: dict, history: list) -> str:
         f"| Successful logins | {m['logins_ok']:,} |",
         f"| Hands-on sessions (ran commands / downloads) | {m['hands_on']:,} |",
         f"| Distinct attack campaigns (command fingerprints) | {m['campaigns']:,} "
-        f"(largest: {plural(m['top_campaign'], 'session')}) |",
+        f"(largest: {plural(m['top_campaign_ips'], 'source IP')}) |",
         f"| Malware samples captured | {m['samples']} |",
         f"| MITRE ATT&CK techniques observed | {m['techniques']} |",
         f"| Telnet / SSH split (attacker sessions) | {share(m['telnet'])} / {share(m['ssh'])} |",
@@ -455,7 +477,8 @@ def render_public(m: dict, history: list) -> str:
              f"| Countries | {m['countries']} |",
              f"| Successful logins | {m['logins_ok']:,} |",
              f"| Hands-on sessions | {m['hands_on']:,} |",
-             f"| Distinct attack campaigns | {m['campaigns']:,} (largest: {plural(m['top_campaign'], 'session')}) |",
+             f"| Distinct attack campaigns | {m['campaigns']:,} "
+             f"(largest: {plural(m['top_campaign_ips'], 'source IP')}) |",
              f"| Malware samples captured | {m['samples']} |",
              f"| MITRE ATT&CK techniques observed | {m['techniques']} |",
              f"| Scanner connections filtered out | {m['scans']:,} |", "",
@@ -544,6 +567,11 @@ def main() -> int:
         alert(cfg, "couldn't pull logs from the VM. Away from UMBC? Add your current IP to the GCP "
                    f"`admin-ssh` rule. Otherwise ask Claude to check sensor-01. ({type(e).__name__})")
         return 1
+    if cfg.backup_dir:
+        try:
+            backup_logs(cfg.log_dir, cfg.backup_dir)
+        except OSError as e:
+            alert(cfg, f"log backup to {cfg.backup_dir} failed ({type(e).__name__}). Stats still ran.")
     try:
         sessions = load_sessions(cfg.log_dir, cfg.own_ips)
         geo, geo_ok = lookup_countries({s["ip"] for s in sessions.values()}, cfg.geo_cache)
