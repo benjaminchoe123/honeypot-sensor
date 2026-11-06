@@ -1,4 +1,8 @@
-# Private: VM address and your own IPs. Never commit.
+# Private: VM address, your own IPs, local paths. Never commit.
 config.local.json
+runs.log
+.venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+.ruff_cache/

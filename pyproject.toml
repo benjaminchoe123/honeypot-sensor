@@ -1,0 +1,19 @@
+[project]
+name = "honeypot-sensor"
+version = "0.2.0"
+description = "Cowrie honeypot on GCP with daily attacker metrics mapped to MITRE ATT&CK"
+requires-python = ">=3.12"
+dependencies = []  # standard library only
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]

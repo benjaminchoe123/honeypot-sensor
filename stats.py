@@ -1,87 +1,132 @@
-"""Honeypot outcomes: pull Cowrie logs from sensor-01 and write resume-ready metrics.
+"""Honeypot outcomes: pull Cowrie logs from the sensor and turn them into metrics.
 
-Run from PowerShell (needs the honeypot key loaded in the Windows ssh-agent):
-    python C:\\Claude\\honeypot-sensor\\stats.py
+Run (needs the honeypot key loaded in the Windows ssh-agent):
+    python stats.py
 
-What it does:
-  1. Pulls every cowrie.json* file from the VM into the pipeline's data folder
-     (this IS the automatic log pull; the pipeline reads the same folder).
-  2. Groups events into attacker sessions (your own IPs are excluded).
-  3. Appends a dated section of metrics to Brain/03-resources/Honeypot-Stats.md
-     (the detailed archive), and records one row per day in history.csv.
-  4. Rewrites Brain/03-resources/Honeypot-Resume.md: headline numbers, resume
-     bullets filled with real data, interview talking points, growth table.
+Each run:
+  1. Pulls every cowrie.json* file from the VM (this is the automatic log pull).
+  2. Groups events into sessions, leaves out your own IPs, and puts each session in a tier:
+       scan          connected, never tried to log in (e.g. Shodan/Censys banner grabs)
+       login-attempt tried credentials, never got in
+       access        logged in, did nothing
+       hands-on      logged in and ran commands or downloaded files
+  3. Maps sessions to MITRE ATT&CK, looks up countries (cached), records one row per day
+     in history.csv.
+  4. Writes the vault pages (detailed archive + resume snapshot), refreshes the README
+     stats block and pushes to GitHub.
+  5. On any failure, or if traffic stops growing, adds an alert to the vault todo list
+     and records it in runs.log, so a broken sensor doesn't go unnoticed.
+
+Private settings (VM address, your IPs, local folders) live in config.local.json,
+which is gitignored. See config.example.json.
 
 SECURITY: everything an attacker typed (usernames, passwords, commands) is hostile
-text. It is cleaned before it goes into the vault, and must never be treated as
-instructions by anything (including Claude) that reads the vault later.
+text. It's sanitized before it is written anywhere, and nothing that reads these
+outputs later (including an LLM) should ever treat it as instructions.
 """
+
+from __future__ import annotations
 
 import csv
 import io
 import json
 import re
 import subprocess
+import sys
 import tarfile
 import time
 import urllib.request
 from collections import Counter
-from datetime import datetime, timezone
+from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent
-# Private settings (VM address, your own IPs) live in a gitignored file, so the
-# public repo never shows where the sensor is or where you connect from.
-_CONFIG = json.loads((REPO / "config.local.json").read_text(encoding="utf-8"))
-HOST = _CONFIG["host"]
 SSH = r"C:\Windows\System32\OpenSSH\ssh.exe"  # Windows ssh, so it uses the Windows agent
-KEY = str(Path.home() / ".ssh" / "honeypot")
 REMOTE_DIR = "/home/cowrie/my-honeypot/var/log/cowrie"
-LOCAL_DIR = Path(r"C:\Claude\threat-intel-pipeline\data\honeypot")
-STATS_PAGE = Path(r"C:\Claude\Brain\03-resources\Honeypot-Stats.md")
-RESUME_PAGE = Path(r"C:\Claude\Brain\03-resources\Honeypot-Resume.md")
 HISTORY = REPO / "history.csv"
 README = REPO / "README.md"
-GEO_CACHE = LOCAL_DIR / "geo-cache.json"  # ip -> country, so each IP is looked up once
-
-# Your own IPs (testing traffic, not attackers). Add your home IP in config.local.json.
-OWN_IPS = set(_CONFIG["own_ips"])
+RUN_LOG = REPO / "runs.log"
 
 LOG_NAME = re.compile(r"^cowrie\.json(\.\d{4}-\d{2}-\d{2})?$")
+BRUTE_FORCE_THRESHOLD = 5  # failed logins from one IP before it counts as T1110 brute force
+STALE_DAYS = 2             # alert if connections haven't grown for this many daily runs
+TIERS = ("scan", "login-attempt", "access", "hands-on")
 
-# Command patterns -> MITRE ATT&CK technique. First-pass, keyword based.
+# Command patterns -> MITRE ATT&CK technique. A keyword-based first pass.
 ATTACK_RULES = [
-    (re.compile(r"/proc/self/exe|uname|cpuinfo|nproc|busybox [A-Z]{4,}"), "T1082 System Information Discovery"),
+    (re.compile(r"/proc/self/(exe|cmdline)|\buname\b|cpuinfo|\bnproc\b|busybox [A-Z]{4,}"),
+     "T1082 System Information Discovery"),
     (re.compile(r"\b(wget|curl|tftp|ftpget)\b"), "T1105 Ingress Tool Transfer"),
     (re.compile(r"\bchmod\b"), "T1222.002 Linux File Permissions Modification"),
-    (re.compile(r"rm -rf|history -c|unset HISTFILE"), "T1070 Indicator Removal"),
+    (re.compile(r"\brm -rf\b|history -c|unset HISTFILE"), "T1070 Indicator Removal"),
     (re.compile(r"authorized_keys"), "T1098.004 SSH Authorized Keys"),
-    (re.compile(r"crontab|/etc/cron"), "T1053.003 Cron"),
+    (re.compile(r"\bcrontab\b|/etc/cron"), "T1053.003 Cron"),
 ]
 
 
-def pull_logs() -> None:
+# ---------------------------------------------------------------- config & pull
+
+@dataclass
+class Config:
+    host: str
+    own_ips: set
+    log_dir: Path
+    vault_dir: Path
+    key: str
+
+    @property
+    def stats_page(self) -> Path:
+        return self.vault_dir / "03-resources" / "Honeypot-Stats.md"
+
+    @property
+    def resume_page(self) -> Path:
+        return self.vault_dir / "03-resources" / "Honeypot-Resume.md"
+
+    @property
+    def todo(self) -> Path:
+        return self.vault_dir / "todo.md"
+
+    @property
+    def geo_cache(self) -> Path:
+        return self.log_dir / "geo-cache.json"
+
+
+def load_config(path: Path = REPO / "config.local.json") -> Config:
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    return Config(
+        host=raw["host"],
+        own_ips=set(raw.get("own_ips", [])),
+        log_dir=Path(raw["log_dir"]),
+        vault_dir=Path(raw["vault_dir"]),
+        key=raw.get("ssh_key", str(Path.home() / ".ssh" / "honeypot")),
+    )
+
+
+def pull_logs(cfg: Config) -> None:
     """Stream the log folder over SSH as a tarball and extract only cowrie.json* files."""
-    cmd = [SSH, "-i", KEY, "-p", "22222", "-o", "BatchMode=yes", "-o", "ConnectTimeout=15",
-           HOST, f"sudo tar -czf - -C {REMOTE_DIR} ."]
+    cmd = [SSH, "-i", cfg.key, "-p", "22222", "-o", "BatchMode=yes", "-o", "ConnectTimeout=15",
+           cfg.host, f"sudo tar -czf - -C {REMOTE_DIR} ."]
     data = subprocess.run(cmd, capture_output=True, check=True, timeout=180).stdout
-    LOCAL_DIR.mkdir(parents=True, exist_ok=True)
+    cfg.log_dir.mkdir(parents=True, exist_ok=True)
     with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as tf:
         for member in tf.getmembers():
             name = member.name.removeprefix("./")
             if member.isfile() and LOG_NAME.match(name):
                 member.name = name
-                tf.extract(member, LOCAL_DIR, filter="data")  # 'data' filter blocks path tricks
+                tf.extract(member, cfg.log_dir, filter="data")  # 'data' filter blocks path tricks
 
 
-def load_sessions() -> dict:
-    """Read every local log line once and group by session id.
+# ---------------------------------------------------------------- parsing
 
-    Dedupe on the raw line: Cowrie's "uuid" field is the SENSOR's id (same on every
-    event), so it can't identify an event.
+def load_sessions(log_dir: Path, own_ips: set) -> dict:
+    """Read every log line once and group events by session id.
+
+    Dedupe on the raw line: Cowrie's "uuid" field is the SENSOR's id (the same on
+    every event), so it can't identify an event.
     """
     seen, sessions = set(), {}
-    for path in sorted(LOCAL_DIR.glob("cowrie.json*")):
+    for path in sorted(log_dir.glob("cowrie.json*")):
         for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
             if line in seen:
                 continue
@@ -90,7 +135,7 @@ def load_sessions() -> dict:
                 ev = json.loads(line)
             except json.JSONDecodeError:
                 continue  # truncated line from a log being written
-            if ev.get("src_ip") in OWN_IPS:
+            if not isinstance(ev, dict) or ev.get("src_ip") in own_ips:
                 continue
             s = sessions.setdefault(ev.get("session"), {
                 "ip": ev.get("src_ip"), "protocol": ev.get("protocol", "?"),
@@ -100,23 +145,42 @@ def load_sessions() -> dict:
             s["events"] += 1
             eid = ev.get("eventid", "")
             if eid in ("cowrie.login.success", "cowrie.login.failed"):
-                s["creds"].append((ev.get("username", ""), ev.get("password", "")))
+                s["creds"].append((str(ev.get("username", "")), str(ev.get("password", ""))))
                 if eid.endswith("success"):
                     s["login_ok"] = True
                 else:
                     s["failed_logins"] += 1
             elif eid == "cowrie.command.input":
-                s["commands"].append(ev.get("input", ""))
+                s["commands"].append(str(ev.get("input", "")))
             elif eid == "cowrie.session.file_download":
-                s["downloads"].append({"url": ev.get("url", ""), "sha256": ev.get("shasum", "")})
+                s["downloads"].append({"url": str(ev.get("url", "")), "sha256": str(ev.get("shasum", ""))})
     return sessions
 
 
-def techniques(s: dict) -> set:
+def tier(s: dict) -> str:
+    """How far did this session get? (See TIERS.)"""
+    if s["commands"] or s["downloads"]:
+        return "hands-on"
+    if s["login_ok"]:
+        return "access"
+    if s["creds"]:
+        return "login-attempt"
+    return "scan"
+
+
+def brute_force_ips(sessions: dict) -> set:
+    """IPs with at least BRUTE_FORCE_THRESHOLD failed logins across all their sessions."""
+    failures = Counter()
+    for s in sessions.values():
+        failures[s["ip"]] += s["failed_logins"]
+    return {ip for ip, n in failures.items() if n >= BRUTE_FORCE_THRESHOLD}
+
+
+def techniques(s: dict, brute_ips: set) -> set:
     found = set()
     if s["login_ok"]:
         found.add("T1078 Valid Accounts")
-    if s["failed_logins"]:
+    if s["ip"] in brute_ips and s["failed_logins"]:
         found.add("T1110 Brute Force")
     if s["commands"]:
         found.add("T1059.004 Unix Shell")
@@ -136,57 +200,20 @@ def is_interesting(s: dict) -> bool:
     return False
 
 
-def clean(text: str, limit: int = 90) -> str:
-    """Make attacker text safe to show in Markdown: one line, no code/link/table syntax."""
-    text = re.sub(r"[`|\[\]<>]", "?", str(text).replace("\n", " ").replace("\r", " "))
-    return text[:limit] + ("…" if len(text) > limit else "")
+# ---------------------------------------------------------------- enrichment & metrics
 
-
-def render(sessions: dict) -> str:
-    ss = list(sessions.values())
-    starts = sorted(s["start"] for s in ss if s["start"])
-    creds = Counter(c for s in ss for c in s["creds"])
-    cmds = Counter(c for s in ss for c in s["commands"] if c.strip())
-    techs = Counter(t for s in ss for t in techniques(s))
-    downloads = {d["sha256"]: d["url"] for s in ss for d in s["downloads"] if d["sha256"]}
-    interesting = [s for s in ss if is_interesting(s)]
-
-    out = [f"\n## Run {datetime.now():%Y-%m-%d %H:%M} (all-time totals)\n",
-           f"Window: {starts[0][:16] if starts else '-'} → {starts[-1][:16] if starts else '-'} UTC\n",
-           "| Metric | Value |", "|---|---|",
-           f"| Attacker sessions | {len(ss)} |",
-           f"| Unique attacker IPs | {len({s['ip'] for s in ss})} |",
-           f"| SSH / Telnet sessions | {sum(s['protocol'] == 'ssh' for s in ss)} / {sum(s['protocol'] == 'telnet' for s in ss)} |",
-           f"| Login attempts | {sum(creds.values())} |",
-           f"| Successful logins | {sum(s['login_ok'] for s in ss)} |",
-           f"| Sessions that ran commands | {sum(bool(s['commands']) for s in ss)} |",
-           f"| Malware samples captured | {len(downloads)} |",
-           f"| Interesting sessions | {len(interesting)} |", ""]
-    out += ["**Top credentials tried**", ""]
-    out += [f"- {clean(u, 30)} / {clean(p, 30)} ({n})" for (u, p), n in creds.most_common(10)]
-    out += ["", "**ATT&CK techniques observed (sessions)**", ""]
-    out += [f"- {t} ({n})" for t, n in techs.most_common()]
-    out += ["", "**Top commands** (attacker text, sanitized)", ""]
-    out += [f"- {clean(c)} ({n})" for c, n in cmds.most_common(10)]
-    out += ["", "**Captured samples (SHA-256)**: look up on VirusTotal, never run", ""]
-    out += [f"- {h} from {clean(u, 60) or 'inline write'}" for h, u in downloads.items()]
-    out += ["", "**Interesting sessions**", ""]
-    out += [f"- {s['start'][:19]} {s['ip']} {s['protocol']}: {len(s['commands'])} cmds, "
-            f"{len(s['downloads'])} downloads" for s in interesting]
-    return "\n".join(out) + "\n"
-
-
-def lookup_countries(ips: set) -> dict:
+def lookup_countries(ips: set, cache_path: Path) -> tuple[dict, bool]:
     """IP -> country via ip-api.com's free batch API (no key; 100 IPs/request, 15 requests/min).
 
-    Results are cached, so each IP is only looked up once. Geo is a nice-to-have:
-    if the lookup fails, the run continues and those IPs count as unknown.
+    Cached, so each IP is only looked up once. Returns (mapping, ok). Geo data is
+    nice to have: on failure the run continues and those IPs count as unknown.
     """
     try:
-        cache = json.loads(GEO_CACHE.read_text(encoding="utf-8"))
+        cache = json.loads(cache_path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         cache = {}
     missing = sorted(ip for ip in ips if ip and ip not in cache)
+    ok = True
     for i in range(0, len(missing), 100):
         body = json.dumps([{"query": ip, "fields": "status,country,query"}
                            for ip in missing[i:i + 100]]).encode()
@@ -198,189 +225,317 @@ def lookup_countries(ips: set) -> dict:
                     if row.get("status") == "success":
                         cache[row["query"]] = row["country"]
         except (OSError, ValueError):
+            ok = False
             break
         if i + 100 < len(missing):
             time.sleep(4.5)  # stay under 15 batch requests/minute
-    GEO_CACHE.write_text(json.dumps(cache, indent=0), encoding="utf-8")
-    return cache
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache_path.write_text(json.dumps(cache, indent=0), encoding="utf-8")
+    return cache, ok
 
 
-def summarize(sessions: dict, geo: dict) -> dict:
-    """The headline numbers, computed once and shared by every output."""
+def summarize(sessions: dict, geo: dict, today: str | None = None) -> dict:
+    """Every number, computed once and shared by every output."""
     ss = list(sessions.values())
-    ips = {s["ip"] for s in ss}
+    brute = brute_force_ips(sessions)
+    tiers = Counter(tier(s) for s in ss)
+    attackers = [s for s in ss if tier(s) != "scan"]
+    attacker_ips = {s["ip"] for s in attackers}
     starts = sorted(s["start"] for s in ss if s["start"])
     first = datetime.fromisoformat(starts[0].replace("Z", "+00:00")) if starts else None
-    techs = Counter(t for s in ss for t in techniques(s))
+    techs = Counter(t for s in ss for t in techniques(s, brute))
+    samples = {d["sha256"]: d["url"] for s in ss for d in s["downloads"] if d["sha256"]}
     return {
-        "date": f"{datetime.now():%Y-%m-%d}",
-        "days": (datetime.now(timezone.utc) - first).days + 1 if first else 0,
+        "date": today or f"{datetime.now():%Y-%m-%d}",
+        "days": (datetime.now(UTC) - first).days + 1 if first else 0,
         "events": sum(s["events"] for s in ss),
-        "sessions": len(ss),
-        "ips": len(ips),
-        "countries": len({geo[ip] for ip in ips if ip in geo}),
-        "ssh": sum(s["protocol"] == "ssh" for s in ss),
-        "telnet": sum(s["protocol"] == "telnet" for s in ss),
+        "connections": len(ss),
+        "all_ips": len({s["ip"] for s in ss}),
+        "scans": tiers["scan"],
+        "login_attempt": tiers["login-attempt"],
+        "access": tiers["access"],
+        "hands_on": tiers["hands-on"],
+        "attacker_sessions": len(attackers),
+        "attacker_ips": len(attacker_ips),
+        "countries": len({geo[ip] for ip in attacker_ips if ip in geo}),
+        "ssh": sum(s["protocol"] == "ssh" for s in attackers),
+        "telnet": sum(s["protocol"] == "telnet" for s in attackers),
         "login_attempts": sum(len(s["creds"]) for s in ss),
         "logins_ok": sum(s["login_ok"] for s in ss),
-        "cmd_sessions": sum(bool(s["commands"]) for s in ss),
-        "samples": len({d["sha256"] for s in ss for d in s["downloads"] if d["sha256"]}),
+        "samples": len(samples),
         "techniques": len(techs),
-        # not saved to history.csv; used for talking points only
+        "interesting": sum(is_interesting(s) for s in ss),
+        # below: detail for the pages, not saved to history.csv
         "_techs": techs,
         "_creds": Counter(c for s in ss for c in s["creds"]),
-        "_countries": Counter(geo.get(s["ip"], "Unknown") for s in ss),
+        "_countries": Counter(geo.get(s["ip"], "Unknown") for s in attackers),
+        "_cmds": Counter(c for s in ss for c in s["commands"] if c.strip()),
+        "_samples": samples,
+        "_interesting": [s for s in ss if is_interesting(s)],
     }
 
 
-HISTORY_FIELDS = ["date", "days", "events", "sessions", "ips", "countries", "ssh", "telnet",
-                  "login_attempts", "logins_ok", "cmd_sessions", "samples", "techniques"]
+HISTORY_FIELDS = ["date", "days", "events", "connections", "all_ips", "scans", "login_attempt",
+                  "access", "hands_on", "attacker_sessions", "attacker_ips", "countries", "ssh",
+                  "telnet", "login_attempts", "logins_ok", "samples", "techniques", "interesting"]
 
 
-def update_history(m: dict) -> list:
-    """One row per day (a second run on the same day replaces that day's row)."""
+def update_history(m: dict, path: Path = HISTORY) -> list:
+    """One row per day; a second run on the same day replaces that day's row.
+
+    Rows from older schemas are kept; columns they don't have stay blank.
+    """
     rows = []
-    if HISTORY.exists():
-        with HISTORY.open(newline="", encoding="utf-8") as f:
-            rows = [r for r in csv.DictReader(f) if r["date"] != m["date"]]
+    if path.exists():
+        with path.open(newline="", encoding="utf-8") as f:
+            rows = [r for r in csv.DictReader(f) if r.get("date") != m["date"]]
     rows.append({k: m[k] for k in HISTORY_FIELDS})
-    with HISTORY.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=HISTORY_FIELDS)
+    with path.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=HISTORY_FIELDS, restval="", extrasaction="ignore")
         w.writeheader()
         w.writerows(rows)
     return rows
 
 
+def is_stale(history: list, days: int = STALE_DAYS) -> bool:
+    """True if total connections haven't grown over the last `days` daily rows."""
+    vals = [r.get("connections", "") for r in history[-(days + 1):]]
+    return len(vals) == days + 1 and all(v != "" for v in vals) and len(set(vals)) == 1
+
+
+# ---------------------------------------------------------------- rendering
+
+_UNSAFE = str.maketrans({"`": "'", "|": "¦", "[": "(", "]": ")", "<": "‹", ">": "›",
+                         "\n": " ", "\r": " ", "*": "∗", "#": "＃"})
+
+
+def clean(text: object, limit: int = 90) -> str:
+    """Make attacker text safe to show in Markdown: one line, no code/link/table/HTML syntax."""
+    text = str(text).translate(_UNSAFE)
+    return text[:limit] + ("…" if len(text) > limit else "")
+
+
+def plural(n: int, word: str) -> str:
+    return f"{n:,} {word}{'' if n == 1 else 's'}"
+
+
+def funnel_table(m: dict) -> list:
+    return [
+        "| Tier | Sessions | Meaning |", "|---|---|---|",
+        f"| Scan | {m['scans']:,} | Connected, never tried to log in |",
+        f"| Login attempt | {m['login_attempt']:,} | Tried credentials, never got in |",
+        f"| Access | {m['access']:,} | Logged in, did nothing |",
+        f"| Hands-on | {m['hands_on']:,} | Logged in and ran commands or downloaded files |",
+    ]
+
+
+def render_archive(m: dict) -> str:
+    """One dated section for the detailed vault archive (Honeypot-Stats.md)."""
+    out = [f"\n## Run {datetime.now():%Y-%m-%d %H:%M} (all-time totals)\n",
+           f"{plural(m['connections'], 'connection')} from {plural(m['all_ips'], 'IP')}; "
+           f"{plural(m['attacker_sessions'], 'attacker session')} from "
+           f"{plural(m['attacker_ips'], 'attacker IP')} in {plural(m['countries'], 'country')}.\n"]
+    out += funnel_table(m)
+    out += ["", "**Top credentials tried**", ""]
+    out += [f"- {clean(u, 30)} / {clean(p, 30)} ({n})" for (u, p), n in m["_creds"].most_common(10)]
+    out += ["", "**ATT&CK techniques observed (sessions)**", ""]
+    out += [f"- {t} ({n})" for t, n in m["_techs"].most_common()]
+    out += ["", "**Top commands** (attacker text, sanitized)", ""]
+    out += [f"- {clean(c)} ({n})" for c, n in m["_cmds"].most_common(10)]
+    out += ["", "**Captured samples (SHA-256)**: look up on VirusTotal, never run", ""]
+    out += [f"- {h} from {clean(u, 60) or 'inline write'}" for h, u in m["_samples"].items()]
+    out += ["", "**Interesting sessions**", ""]
+    out += [f"- {s['start'][:19]} {s['ip']} {s['protocol']}: {len(s['commands'])} cmds, "
+            f"{len(s['downloads'])} downloads" for s in m["_interesting"]]
+    return "\n".join(out) + "\n"
+
+
+def resume_bullets(m: dict) -> list:
+    return [
+        f"- Deployed a hardened SSH/Telnet honeypot on Google Cloud with egress filtering and isolated "
+        f"admin access; recorded {plural(m['attacker_sessions'], 'attacker session')} from "
+        f"{plural(m['attacker_ips'], 'unique IP')} across {plural(m['countries'], 'country')} "
+        f"over {plural(m['days'], 'day')}, filtering out {m['scans']:,} scanner connections.",
+        f"- Built a tested Python tool (pytest, CI) that pulls logs daily, groups {m['events']:,} events "
+        f"into sessions, classifies them by attack depth, and maps behavior to "
+        f"{plural(m['techniques'], 'MITRE ATT&CK technique')}.",
+        f"- Analyzed {plural(m['hands_on'], 'hands-on attacker session')} and "
+        f"{plural(m['samples'], 'captured malware sample')} (VirusTotal), documenting IoT botnet "
+        f"tradecraft such as default-credential abuse and multi-protocol payload delivery.",
+    ]
+
+
 def render_resume(m: dict, history: list) -> str:
     """The resume-ready page. Fully regenerated each run: it's a view of the data, not notes."""
-    pct = lambda n: f"{100 * n / m['sessions']:.0f}%" if m["sessions"] else "0%"
-    ready = m["days"] >= 14 and m["ips"] >= 100
+    ready = m["days"] >= 14 and m["attacker_ips"] >= 100
+
+    def share(n: int) -> str:
+        return f"{100 * n / m['attacker_sessions']:.0f}%" if m["attacker_sessions"] else "0%"
+
     lines = [
         "---", "title: Honeypot Resume Snapshot", "type: resource",
         "tags: [honeypot, resume, metrics]", "created: 2026-11-05", f"updated: {m['date']}", "---", "",
         "# Honeypot: Resume Snapshot", "",
-        "> Auto-generated by `C:\\Claude\\honeypot-sensor\\stats.py` on every run. Hand edits get "
-        "overwritten; copy text out of here instead. Detailed archive: [[03-resources/Honeypot-Stats]]. "
+        "> Auto-generated by `stats.py` on every run. Hand edits get overwritten; copy text out of "
+        "here instead. Detailed archive: [[03-resources/Honeypot-Stats]]. "
         "Project: [[01-projects/Honeypot-Sensor]].", "",
-        f"**As of {m['date']}, after {m['days']} day(s) of collection.** "
+        f"**As of {m['date']}, after {plural(m['days'], 'day')} of collection.** "
         + ("✅ Enough data to use on the resume." if ready else
-           "⏳ Not resume-ready yet: aim for at least 14 days and 100+ unique IPs."), "",
+           "⏳ Not resume-ready yet: aim for at least 14 days and 100+ attacker IPs."), "",
         "## Headline numbers", "",
         "| Metric | Value |", "|---|---|",
         f"| Days running | {m['days']} |",
-        f"| Attacker sessions | {m['sessions']:,} |",
-        f"| Unique attacker IPs | {m['ips']:,} |",
+        f"| Attacker sessions (tried to log in or further) | {m['attacker_sessions']:,} |",
+        f"| Unique attacker IPs | {m['attacker_ips']:,} |",
         f"| Countries | {m['countries']} |",
-        f"| Events logged | {m['events']:,} |",
-        f"| Login attempts | {m['login_attempts']:,} |",
         f"| Successful logins | {m['logins_ok']:,} |",
-        f"| Sessions with post-login commands | {m['cmd_sessions']:,} |",
+        f"| Hands-on sessions (ran commands / downloads) | {m['hands_on']:,} |",
         f"| Malware samples captured | {m['samples']} |",
         f"| MITRE ATT&CK techniques observed | {m['techniques']} |",
-        f"| Telnet / SSH split | {pct(m['telnet'])} / {pct(m['ssh'])} |", "",
-        "## Resume bullets (filled with today's real numbers)", "",
-        "**Internet-Facing Honeypot & Threat-Intel Sensor** | Google Cloud, Cowrie, Python, MITRE ATT&CK", "",
-        f"- Deployed a hardened SSH/Telnet honeypot on Google Cloud with egress filtering and isolated "
-        f"admin access; captured {m['sessions']:,} attacker sessions from {m['ips']:,} unique IPs "
-        f"across {m['countries']} countries over {m['days']} days.",
-        f"- Built a Python tool that pulls logs automatically every day, groups {m['events']:,} events into "
-        f"sessions, and maps attacker behavior to {m['techniques']} MITRE ATT&CK techniques.",
-        f"- Analyzed {m['cmd_sessions']:,} post-login attacker sessions and {m['samples']} captured malware "
-        f"samples (VirusTotal), documenting IoT botnet tradecraft such as default-credential abuse "
-        f"and multi-protocol payload delivery.", "",
-        "## Interview talking points", "",
-        "**Most-tried credentials** (shows why default passwords get devices owned):", "",
+        f"| Telnet / SSH split (attacker sessions) | {share(m['telnet'])} / {share(m['ssh'])} |",
+        f"| Scanner connections filtered out | {m['scans']:,} |",
+        f"| Events logged | {m['events']:,} |", "",
+        "## Attack-depth funnel", "",
     ]
+    lines += funnel_table(m)
+    lines += ["", "## Resume bullets (filled with today's real numbers)", "",
+              "**Internet-Facing Honeypot & Threat-Intel Sensor** | Google Cloud, Cowrie, Python, MITRE ATT&CK", ""]
+    lines += resume_bullets(m)
+    lines += ["", "## Interview talking points", "",
+              "**Most-tried credentials** (shows why default passwords get devices owned):", ""]
     lines += [f"- {clean(u, 30)} / {clean(p, 30)} ({n:,})" for (u, p), n in m["_creds"].most_common(5)]
-    lines += ["", "**ATT&CK techniques** (keyword-based first pass; know how each was detected):", ""]
-    lines += [f"- {t} ({n:,} sessions)" for t, n in m["_techs"].most_common()]
-    lines += ["", "**Top source countries** (where the attacking machine is, which is usually an "
-              "infected device, not where the attacker lives):", ""]
-    lines += [f"- {clean(c, 40)} ({n:,} sessions)" for c, n in m["_countries"].most_common(5)]
+    lines += ["", f"**ATT&CK techniques** (keyword-based first pass; brute force needs "
+              f"{BRUTE_FORCE_THRESHOLD}+ failures from one IP):", ""]
+    lines += [f"- {t} ({plural(n, 'session')})" for t, n in m["_techs"].most_common()]
+    lines += ["", "**Top source countries** (where the attacking machine is, usually an infected "
+              "device, not where the attacker lives):", ""]
+    lines += [f"- {clean(c, 40)} ({plural(n, 'session')})" for c, n in m["_countries"].most_common(5)]
     lines += ["", "## Growth over time", "",
-              "| Date | Days | Sessions | Unique IPs | Countries | Samples | Techniques |",
+              "| Date | Days | Attacker sessions | Attacker IPs | Hands-on | Countries | Samples |",
               "|---|---|---|---|---|---|---|"]
-    lines += [f"| {r['date']} | {r['days']} | {int(r['sessions']):,} | {int(r['ips']):,} | "
-              f"{r['countries']} | {r['samples']} | {r['techniques']} |" for r in history]
+    lines += [f"| {r['date']} | {r.get('days', '')} | {r.get('attacker_sessions') or '-'} | "
+              f"{r.get('attacker_ips') or '-'} | {r.get('hands_on') or '-'} | {r.get('countries', '')} | "
+              f"{r.get('samples', '')} |" for r in history]
     return "\n".join(lines) + "\n"
 
 
 def render_public(m: dict, history: list) -> str:
     """Aggregate-only stats for the public README: no attacker IPs, no raw commands."""
-    lines = [
-        f"_Last updated {m['date']} · {m['days']} day(s) of collection · updated automatically every day._", "",
-        "| Metric | Value |", "|---|---|",
-        f"| Attacker sessions | {m['sessions']:,} |",
-        f"| Unique attacker IPs | {m['ips']:,} |",
-        f"| Countries | {m['countries']} |",
-        f"| Login attempts / successful | {m['login_attempts']:,} / {m['logins_ok']:,} |",
-        f"| Sessions with post-login commands | {m['cmd_sessions']:,} |",
-        f"| Malware samples captured | {m['samples']} |",
-        f"| MITRE ATT&CK techniques observed | {m['techniques']} |",
-        f"| Telnet / SSH sessions | {m['telnet']:,} / {m['ssh']:,} |", "",
-        "**ATT&CK techniques observed** (sessions)", "",
-    ]
+    lines = [f"_Last updated {m['date']} · {plural(m['days'], 'day')} of collection · "
+             f"updated automatically every day._", "",
+             "| Metric | Value |", "|---|---|",
+             f"| Attacker sessions | {m['attacker_sessions']:,} |",
+             f"| Unique attacker IPs | {m['attacker_ips']:,} |",
+             f"| Countries | {m['countries']} |",
+             f"| Successful logins | {m['logins_ok']:,} |",
+             f"| Hands-on sessions | {m['hands_on']:,} |",
+             f"| Malware samples captured | {m['samples']} |",
+             f"| MITRE ATT&CK techniques observed | {m['techniques']} |",
+             f"| Scanner connections filtered out | {m['scans']:,} |", "",
+             "**Attack-depth funnel**", ""]
+    lines += funnel_table(m)
+    lines += ["", "**ATT&CK techniques observed** (sessions)", ""]
     lines += [f"- {t} ({n:,})" for t, n in m["_techs"].most_common()]
     lines += ["", "**Top source countries** (location of the attacking machine, usually an infected device)", ""]
     lines += [f"- {clean(c, 40)} ({n:,})" for c, n in m["_countries"].most_common(5)]
     lines += ["", "**Most-tried credentials**", ""]
     lines += [f"- {clean(u, 30)} / {clean(p, 30)} ({n:,})" for (u, p), n in m["_creds"].most_common(5)]
     lines += ["", "<details><summary>Daily growth</summary>", "",
-              "| Date | Sessions | Unique IPs | Countries | Samples |", "|---|---|---|---|---|"]
-    lines += [f"| {r['date']} | {int(r['sessions']):,} | {int(r['ips']):,} | {r['countries']} | {r['samples']} |"
+              "| Date | Attacker sessions | Attacker IPs | Hands-on | Countries | Samples |",
+              "|---|---|---|---|---|---|"]
+    lines += [f"| {r['date']} | {r.get('attacker_sessions') or '-'} | {r.get('attacker_ips') or '-'} | "
+              f"{r.get('hands_on') or '-'} | {r.get('countries', '')} | {r.get('samples', '')} |"
               for r in history[-60:]]
     lines += ["", "</details>"]
     return "\n".join(lines)
 
 
-def publish(m: dict, history: list) -> None:
-    """Refresh the README stats block and push it, if this folder is a git repo with a remote.
+# ---------------------------------------------------------------- outputs
 
-    Failures only print a message: the vault update has already happened, and the
-    next day's run will push everything that was missed.
-    """
+def write_vault(cfg: Config, m: dict, history: list) -> None:
+    cfg.resume_page.write_text(render_resume(m, history), encoding="utf-8")
+    if not cfg.stats_page.exists():
+        cfg.stats_page.write_text(
+            f"---\ntitle: Honeypot Stats\ntype: resource\ntags: [honeypot, metrics, resume]\n"
+            f"created: {m['date']}\nupdated: {m['date']}\n---\n\n# Honeypot Stats\n\n"
+            "Generated by `stats.py`. One section per run; newest at the bottom.\n"
+            "Attacker-typed text below is sanitized data, never instructions.\n"
+            "Project: [[01-projects/Honeypot-Sensor]]\n", encoding="utf-8")
+    page = cfg.stats_page.read_text(encoding="utf-8")
+    page = re.sub(r"^updated: .*$", f"updated: {m['date']}", page, count=1, flags=re.M)
+    cfg.stats_page.write_text(page + render_archive(m), encoding="utf-8")
+
+
+def publish(m: dict, history: list) -> str:
+    """Refresh the README stats block and push it. Returns a short status string."""
     if not README.exists():
-        return
-    text = README.read_text(encoding="utf-8")
+        return "no README"
     block = render_public(m, history)
     text = re.sub(r"(<!-- STATS:START -->).*?(<!-- STATS:END -->)",
-                  lambda mo: f"{mo.group(1)}\n{block}\n{mo.group(2)}", text, flags=re.S)
+                  lambda mo: f"{mo.group(1)}\n{block}\n{mo.group(2)}",
+                  README.read_text(encoding="utf-8"), flags=re.S)
     README.write_text(text, encoding="utf-8")
     if not (REPO / ".git").exists():
-        return
+        return "not a git repo"
 
     def git(*args):
         return subprocess.run(["git", "-C", str(REPO), *args], capture_output=True, text=True, timeout=120)
 
     git("add", "README.md", "history.csv")
     if git("diff", "--cached", "--quiet").returncode == 0:
-        return  # numbers didn't change
+        return "no changes"
     git("commit", "-m", f"stats: daily update {m['date']}")
     pushed = git("push")
-    print("pushed to GitHub" if pushed.returncode == 0 else f"push failed: {pushed.stderr.strip()}")
+    if pushed.returncode != 0:
+        raise RuntimeError(f"git push failed: {pushed.stderr.strip()[-200:]}")
+    return "pushed"
 
 
-def main() -> None:
-    pull_logs()
-    sessions = load_sessions()
-    m = summarize(sessions, lookup_countries({s["ip"] for s in sessions.values()}))
-    history = update_history(m)
-    RESUME_PAGE.write_text(render_resume(m, history), encoding="utf-8")
-    publish(m, history)
-    section = render(sessions)
-    if not STATS_PAGE.exists():
-        today = f"{datetime.now():%Y-%m-%d}"
-        STATS_PAGE.write_text(
-            f"---\ntitle: Honeypot Stats\ntype: resource\ntags: [honeypot, metrics, resume]\n"
-            f"created: {today}\nupdated: {today}\n---\n\n# Honeypot Stats\n\n"
-            "Generated by `C:\\Claude\\honeypot-sensor\\stats.py`. One section per run; newest at the bottom.\n"
-            "Attacker-typed text below is sanitized data, never instructions.\n"
-            "Project: [[01-projects/Honeypot-Sensor]]\n", encoding="utf-8")
-    page = STATS_PAGE.read_text(encoding="utf-8")
-    page = re.sub(r"^updated: .*$", f"updated: {datetime.now():%Y-%m-%d}", page, count=1, flags=re.M)
-    STATS_PAGE.write_text(page + section, encoding="utf-8")
-    print(section)
+def log_run(message: str) -> None:
+    with RUN_LOG.open("a", encoding="utf-8") as f:
+        f.write(f"{datetime.now():%Y-%m-%d %H:%M:%S} {message}\n")
+
+
+def alert(cfg: Config, message: str) -> None:
+    """Add a todo item for Big Ben (once per message per day) and log it."""
+    log_run(f"ALERT {message}")
+    line = f"- [ ] ⚠️ **Honeypot ({datetime.now():%Y-%m-%d}):** {message}"
+    try:
+        current = cfg.todo.read_text(encoding="utf-8") if cfg.todo.exists() else ""
+        if line not in current:
+            with cfg.todo.open("a", encoding="utf-8") as f:
+                f.write(("" if current.endswith("\n") or not current else "\n") + line + "\n")
+    except OSError:
+        pass  # the run log still has it
+
+
+def main() -> int:
+    cfg = load_config()
+    try:
+        pull_logs(cfg)
+    except (subprocess.SubprocessError, OSError) as e:
+        alert(cfg, "couldn't pull logs from the VM. Away from UMBC? Add your current IP to the GCP "
+                   f"`admin-ssh` rule. Otherwise ask Claude to check sensor-01. ({type(e).__name__})")
+        return 1
+    try:
+        sessions = load_sessions(cfg.log_dir, cfg.own_ips)
+        geo, geo_ok = lookup_countries({s["ip"] for s in sessions.values()}, cfg.geo_cache)
+        m = summarize(sessions, geo)
+        history = update_history(m)
+        write_vault(cfg, m, history)
+        status = publish(m, history)
+    except Exception as e:  # noqa: BLE001 - any crash must become a visible alert
+        alert(cfg, f"stats run crashed: {type(e).__name__}: {clean(e, 150)}")
+        return 1
+    if not geo_ok:
+        log_run("WARN country lookup failed; some IPs counted as unknown")
+    if is_stale(history):
+        alert(cfg, f"no new connections for {STALE_DAYS} days. Cowrie may be down; ask Claude to check sensor-01.")
+    log_run(f"OK attacker_sessions={m['attacker_sessions']} attacker_ips={m['attacker_ips']} "
+            f"hands_on={m['hands_on']} github={status}")
+    print(f"done: {m['attacker_sessions']} attacker sessions, github {status}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

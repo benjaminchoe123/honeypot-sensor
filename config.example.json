@@ -1,0 +1,7 @@
+{
+  "host": "honeypot-admin@YOUR.VM.IP",
+  "own_ips": ["YOUR.HOME.IP", "YOUR.SCHOOL.IP"],
+  "log_dir": "C:\\path\\to\\local\\honeypot-logs",
+  "vault_dir": "C:\\path\\to\\obsidian-vault",
+  "ssh_key": "C:\\Users\\you\\.ssh\\honeypot"
+}
