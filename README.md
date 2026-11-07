@@ -15,56 +15,56 @@ _Last updated 2026-11-06 · 1 day of collection · updated automatically every d
 
 | Metric | Value |
 |---|---|
-| Attacker sessions | 41 |
-| Unique attacker IPs | 20 |
-| Countries | 13 |
-| Successful logins | 40 |
-| Hands-on sessions | 30 |
-| Distinct attack campaigns | 10 (largest: 3 source IPs) |
+| Attacker sessions | 879 |
+| Unique attacker IPs | 68 |
+| Countries | 25 |
+| Successful logins | 874 |
+| Hands-on sessions | 822 |
+| Distinct attack campaigns | 82 (largest: 11 source IPs) |
 | Malware samples captured | 1 |
 | MITRE ATT&CK techniques observed | 6 |
-| Scanner connections filtered out | 27 |
+| Scanner connections filtered out | 534 |
 
 **Attack-depth funnel**
 
 | Tier | Sessions | Meaning |
 |---|---|---|
-| Scan | 27 | Connected, never tried to log in |
-| Login attempt | 1 | Tried credentials, never got in |
-| Access | 10 | Logged in, did nothing |
-| Hands-on | 30 | Logged in and ran commands or downloaded files |
+| Scan | 534 | Connected, never tried to log in |
+| Login attempt | 5 | Tried credentials, never got in |
+| Access | 52 | Logged in, did nothing |
+| Hands-on | 822 | Logged in and ran commands or downloaded files |
 
 **ATT&CK techniques observed** (sessions)
 
-- T1078 Valid Accounts (40)
-- T1059.004 Unix Shell (30)
-- T1082 System Information Discovery (8)
-- T1222.002 Linux File Permissions Modification (4)
-- T1105 Ingress Tool Transfer (1)
-- T1070 Indicator Removal (1)
+- T1078 Valid Accounts (874)
+- T1059.004 Unix Shell (822)
+- T1222.002 Linux File Permissions Modification (62)
+- T1082 System Information Discovery (21)
+- T1105 Ingress Tool Transfer (6)
+- T1070 Indicator Removal (2)
 
 **Top source countries** (location of the attacking machine, usually an infected device)
 
-- United States (17)
-- India (4)
-- South Korea (4)
-- Belgium (4)
-- China (3)
+- Philippines (624)
+- United States (106)
+- Andorra (55)
+- United Kingdom (24)
+- China (8)
 
 **Most-tried credentials**
 
-- admin / admin (12)
-- root / admin (3)
-- support / support (2)
-- admin / changeme (1)
-- root / cat1029 (1)
+- admin / admin (25)
+- root / admin (17)
+- root /  (9)
+- root / 12345 (8)
+- root / xc3511 (8)
 
 <details><summary>Daily growth</summary>
 
 | Date | Attacker sessions | Attacker IPs | Hands-on | Countries | Samples |
 |---|---|---|---|---|---|
 | 2026-11-05 | 5 | 4 | 4 | 3 | 1 |
-| 2026-11-06 | 41 | 20 | 30 | 13 | 1 |
+| 2026-11-06 | 879 | 68 | 822 | 25 | 1 |
 
 </details>
 <!-- STATS:END -->
