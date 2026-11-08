@@ -11,53 +11,54 @@ come from live data and update automatically every day.
 ## Live stats
 
 <!-- STATS:START -->
-_Last updated 2026-11-06 · 1 day of collection · updated automatically every day._
+_Last updated 2026-11-07 · 2 days of collection · updated automatically every day._
 
 | Metric | Value |
 |---|---|
-| Attacker sessions | 879 |
-| Unique attacker IPs | 68 |
-| Countries | 25 |
-| Successful logins | 874 |
-| Hands-on sessions | 822 |
-| Distinct attack campaigns | 82 (largest: 11 source IPs) |
+| Attacker sessions | 5,112 |
+| Unique attacker IPs | 141 |
+| Countries | 39 |
+| Successful logins | 5,102 |
+| Hands-on sessions | 4,970 |
+| Distinct attack campaigns | 113 (largest: 33 source IPs) |
 | Malware samples captured | 1 |
-| MITRE ATT&CK techniques observed | 6 |
-| Scanner connections filtered out | 534 |
+| MITRE ATT&CK techniques observed | 7 |
+| Scanner connections filtered out | 859 |
 
 **Attack-depth funnel**
 
 | Tier | Sessions | Meaning |
 |---|---|---|
-| Scan | 534 | Connected, never tried to log in |
-| Login attempt | 5 | Tried credentials, never got in |
-| Access | 52 | Logged in, did nothing |
-| Hands-on | 822 | Logged in and ran commands or downloaded files |
+| Scan | 859 | Connected, never tried to log in |
+| Login attempt | 10 | Tried credentials, never got in |
+| Access | 132 | Logged in, did nothing |
+| Hands-on | 4,970 | Logged in and ran commands or downloaded files |
 
 **ATT&CK techniques observed** (sessions)
 
-- T1078 Valid Accounts (874)
-- T1059.004 Unix Shell (822)
-- T1222.002 Linux File Permissions Modification (62)
-- T1082 System Information Discovery (21)
-- T1105 Ingress Tool Transfer (6)
-- T1070 Indicator Removal (2)
+- T1078 Valid Accounts (5,102)
+- T1059.004 Unix Shell (4,970)
+- T1082 System Information Discovery (2,425)
+- T1222.002 Linux File Permissions Modification (93)
+- T1070 Indicator Removal (19)
+- T1105 Ingress Tool Transfer (10)
+- T1110 Brute Force (7)
 
 **Top source countries** (location of the attacking machine, usually an infected device)
 
-- Philippines (624)
-- United States (106)
+- The Netherlands (2,424)
+- Philippines (2,223)
+- United States (173)
+- United Kingdom (70)
 - Andorra (55)
-- United Kingdom (24)
-- China (8)
 
 **Most-tried credentials**
 
-- admin / admin (25)
-- root / admin (17)
-- root /  (9)
-- root / 12345 (8)
-- root / xc3511 (8)
+- admin / admin (45)
+- root / admin (33)
+- root / xc3511 (14)
+- root /  (13)
+- root / 12345 (11)
 
 <details><summary>Daily growth</summary>
 
@@ -65,6 +66,7 @@ _Last updated 2026-11-06 · 1 day of collection · updated automatically every d
 |---|---|---|---|---|---|
 | 2026-11-05 | 5 | 4 | 4 | 3 | 1 |
 | 2026-11-06 | 879 | 68 | 822 | 25 | 1 |
+| 2026-11-07 | 5112 | 141 | 4970 | 39 | 1 |
 
 </details>
 <!-- STATS:END -->
