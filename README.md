@@ -11,54 +11,54 @@ come from live data and update automatically every day.
 ## Live stats
 
 <!-- STATS:START -->
-_Last updated 2026-11-08 · 3 days of collection · updated automatically every day._
+_Last updated 2026-11-09 · 4 days of collection · updated automatically every day._
 
 | Metric | Value |
 |---|---|
-| Attacker sessions | 8,964 |
-| Unique attacker IPs | 215 |
-| Countries | 49 |
-| Successful logins | 8,941 |
-| Hands-on sessions | 8,722 |
-| Distinct attack campaigns | 160 (largest: 50 source IPs) |
+| Attacker sessions | 12,562 |
+| Unique attacker IPs | 260 |
+| Countries | 53 |
+| Successful logins | 12,524 |
+| Hands-on sessions | 12,212 |
+| Distinct attack campaigns | 228 (largest: 59 source IPs) |
 | Malware samples captured | 2 |
 | MITRE ATT&CK techniques observed | 7 |
-| Scanner connections filtered out | 1,094 |
+| Scanner connections filtered out | 1,390 |
 
 **Attack-depth funnel**
 
 | Tier | Sessions | Meaning |
 |---|---|---|
-| Scan | 1,094 | Connected, never tried to log in |
-| Login attempt | 23 | Tried credentials, never got in |
-| Access | 219 | Logged in, did nothing |
-| Hands-on | 8,722 | Logged in and ran commands or downloaded files |
+| Scan | 1,390 | Connected, never tried to log in |
+| Login attempt | 38 | Tried credentials, never got in |
+| Access | 312 | Logged in, did nothing |
+| Hands-on | 12,212 | Logged in and ran commands or downloaded files |
 
 **ATT&CK techniques observed** (sessions)
 
-- T1078 Valid Accounts (8,941)
-- T1059.004 Unix Shell (8,722)
-- T1082 System Information Discovery (6,022)
-- T1222.002 Linux File Permissions Modification (127)
-- T1070 Indicator Removal (33)
+- T1078 Valid Accounts (12,524)
+- T1059.004 Unix Shell (12,212)
+- T1082 System Information Discovery (9,368)
+- T1222.002 Linux File Permissions Modification (182)
+- T1070 Indicator Removal (37)
+- T1110 Brute Force (12)
 - T1105 Ingress Tool Transfer (10)
-- T1110 Brute Force (9)
 
 **Top source countries** (location of the attacking machine, usually an infected device)
 
-- The Netherlands (4,825)
+- The Netherlands (7,263)
 - Philippines (2,223)
-- France (1,233)
-- United States (212)
-- United Kingdom (123)
+- France (2,188)
+- United States (275)
+- United Kingdom (174)
 
 **Most-tried credentials**
 
-- admin / admin (68)
-- root / admin (46)
-- root / 123456 (19)
-- root / 12345 (18)
-- admin / password (16)
+- admin / admin (81)
+- root / admin (56)
+- root / 123456 (30)
+- root / xc3511 (23)
+- root / 12345 (23)
 
 <details><summary>Daily growth</summary>
 
@@ -68,6 +68,7 @@ _Last updated 2026-11-08 · 3 days of collection · updated automatically every 
 | 2026-11-06 | 879 | 68 | 822 | 25 | 1 |
 | 2026-11-07 | 5112 | 141 | 4970 | 39 | 1 |
 | 2026-11-08 | 8964 | 215 | 8722 | 49 | 2 |
+| 2026-11-09 | 12562 | 260 | 12212 | 53 | 2 |
 
 </details>
 <!-- STATS:END -->
