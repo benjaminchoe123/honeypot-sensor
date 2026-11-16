@@ -15,50 +15,50 @@ _Last updated 2026-11-15 · 10 days of collection · updated automatically every
 
 | Metric | Value |
 |---|---|
-| Attacker sessions | 43,414 |
-| Unique attacker IPs | 600 |
+| Attacker sessions | 43,636 |
+| Unique attacker IPs | 603 |
 | Countries | 76 |
-| Successful logins | 43,197 |
-| Hands-on sessions | 41,775 |
-| Distinct attack campaigns | 574 (largest: 80 source IPs) |
+| Successful logins | 43,414 |
+| Hands-on sessions | 41,967 |
+| Distinct attack campaigns | 599 (largest: 82 source IPs) |
 | Malware samples captured | 8 |
 | MITRE ATT&CK techniques observed | 7 |
-| Scanner connections filtered out | 4,354 |
+| Scanner connections filtered out | 4,418 |
 
 **Attack-depth funnel**
 
 | Tier | Sessions | Meaning |
 |---|---|---|
-| Scan | 4,354 | Connected, never tried to log in |
-| Login attempt | 217 | Tried credentials, never got in |
-| Access | 1,422 | Logged in, did nothing |
-| Hands-on | 41,775 | Logged in and ran commands or downloaded files |
+| Scan | 4,418 | Connected, never tried to log in |
+| Login attempt | 222 | Tried credentials, never got in |
+| Access | 1,447 | Logged in, did nothing |
+| Hands-on | 41,967 | Logged in and ran commands or downloaded files |
 
 **ATT&CK techniques observed** (sessions)
 
-- T1078 Valid Accounts (43,197)
-- T1059.004 Unix Shell (41,775)
-- T1082 System Information Discovery (37,278)
-- T1222.002 Linux File Permissions Modification (634)
-- T1110 Brute Force (212)
-- T1070 Indicator Removal (90)
+- T1078 Valid Accounts (43,414)
+- T1059.004 Unix Shell (41,967)
+- T1082 System Information Discovery (37,391)
+- T1222.002 Linux File Permissions Modification (673)
+- T1110 Brute Force (216)
+- T1070 Indicator Removal (117)
 - T1105 Ingress Tool Transfer (44)
 
 **Top source countries** (location of the attacking machine, usually an infected device)
 
-- The Netherlands (28,280)
-- France (6,827)
+- The Netherlands (28,283)
+- France (6,856)
 - Philippines (2,224)
-- United States (2,084)
-- China (851)
+- United States (2,150)
+- China (871)
 
 **Most-tried credentials**
 
-- admin / admin (1,094)
+- admin / admin (1,124)
 - nobody / nobody (317)
-- root / root (198)
-- root / admin (195)
-- root / 123456 (125)
+- root / root (202)
+- root / admin (197)
+- root / 123456 (127)
 
 <details><summary>Daily growth</summary>
 
@@ -72,7 +72,7 @@ _Last updated 2026-11-15 · 10 days of collection · updated automatically every
 | 2026-11-10 | 16936 | 319 | 16376 | 63 | 6 |
 | 2026-11-11 | 21773 | 383 | 20966 | 68 | 6 |
 | 2026-11-12 | 26057 | 460 | 25038 | 69 | 7 |
-| 2026-11-15 | 43414 | 600 | 41775 | 76 | 8 |
+| 2026-11-15 | 43636 | 603 | 41967 | 76 | 8 |
 
 </details>
 <!-- STATS:END -->
