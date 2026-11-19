@@ -177,3 +177,32 @@ def test_public_readme_block_has_no_attacker_ips(tmp_path):
     block = stats.render_public(m, [{"date": "2026-11-06", "attacker_sessions": "3"}])
     for ip in (SCANNER, BRUTER, BOT, ME):
         assert ip not in block
+
+
+def test_alert_does_not_repeat_on_later_days_while_still_open(tmp_path, monkeypatch):
+    monkeypatch.setattr(stats, "RUN_LOG", tmp_path / "runs.log")
+    (tmp_path / "todo.md").write_text("# Todo\n- [ ] ⚠️ **Honeypot (2026-11-01):** git push failed\n",
+                                      encoding="utf-8")
+    cfg = stats.Config(host="h", own_ips=set(), log_dir=tmp_path, vault_dir=tmp_path, key="k")
+    stats.alert(cfg, "git push failed")
+    assert (tmp_path / "todo.md").read_text(encoding="utf-8").count("git push failed") == 1
+
+
+def test_plural_handles_y_endings():
+    assert stats.plural(3, "country") == "3 countries"
+    assert stats.plural(1, "country") == "1 country"
+    assert stats.plural(2, "day") == "2 days"
+
+
+def test_dashboard_data_has_no_attacker_ips_or_commands(tmp_path):
+    sessions = sessions_from(tmp_path)
+    m = stats.summarize(sessions, geo={BOT: "Testland"}, today="2026-11-06")
+    data = stats.render_dashboard(m, [{"date": "2026-11-06", "attacker_sessions": "3", "attacker_ips": ""}])
+    text = json.dumps(data)
+    for ip in (SCANNER, BRUTER, BOT, ME):
+        assert ip not in text
+    for s in sessions.values():
+        for cmd in s["commands"]:
+            assert json.dumps(cmd)[1:-1] not in text
+    assert data["history"][0]["attacker_ips"] is None  # blank history cells become null, not a crash
+    assert [f["tier"] for f in data["funnel"]] == ["Scan", "Login attempt", "Access", "Hands-on"]

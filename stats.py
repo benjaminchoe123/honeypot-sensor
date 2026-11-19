@@ -49,6 +49,7 @@ REMOTE_DIR = "/home/cowrie/my-honeypot/var/log/cowrie"
 HISTORY = REPO / "history.csv"
 README = REPO / "README.md"
 RUN_LOG = REPO / "runs.log"
+DASHBOARD_DATA = REPO / "docs" / "data.json"
 
 LOG_NAME = re.compile(r"^cowrie\.json(\.\d{4}-\d{2}-\d{2})?$")
 BRUTE_FORCE_THRESHOLD = 5  # failed logins from one IP before it counts as T1110 brute force
@@ -360,7 +361,9 @@ def clean(text: object, limit: int = 90) -> str:
 
 
 def plural(n: int, word: str) -> str:
-    return f"{n:,} {word}{'' if n == 1 else 's'}"
+    if n != 1:
+        word = word[:-1] + "ies" if word.endswith("y") and word[-2:-1] not in "aeiou" else word + "s"
+    return f"{n:,} {word}"
 
 
 def funnel_table(m: dict) -> list:
@@ -500,6 +503,38 @@ def render_public(m: dict, history: list) -> str:
     return "\n".join(lines)
 
 
+HISTORY_CHART_FIELDS = ("attacker_sessions", "attacker_ips", "hands_on", "countries", "campaigns", "samples")
+
+
+def render_dashboard(m: dict, history: list) -> dict:
+    """Aggregate-only data for the public GitHub Pages dashboard (docs/data.json).
+
+    Same privacy rule as the README: no attacker IPs, no raw commands. Every string an
+    attacker could have typed goes through clean(), and the page renders it as text only.
+    """
+    def num(v):
+        try:
+            return int(v)
+        except (TypeError, ValueError):
+            return None
+
+    return {
+        "updated": m["date"],
+        "days": m["days"],
+        "kpis": {k: m[k] for k in ("attacker_sessions", "attacker_ips", "countries", "campaigns",
+                                    "samples", "techniques", "hands_on", "logins_ok", "scans",
+                                    "ssh", "telnet", "top_campaign_ips")},
+        "funnel": [{"tier": t, "sessions": m[k]} for t, k in
+                   (("Scan", "scans"), ("Login attempt", "login_attempt"),
+                    ("Access", "access"), ("Hands-on", "hands_on"))],
+        "history": [{"date": r["date"], **{k: num(r.get(k)) for k in HISTORY_CHART_FIELDS}}
+                    for r in history],
+        "countries": [[clean(c, 40), n] for c, n in m["_countries"].most_common(10)],
+        "techniques": [[clean(t, 60), n] for t, n in m["_techs"].most_common()],
+        "credentials": [[f"{clean(u, 24)} / {clean(p, 24)}", n] for (u, p), n in m["_creds"].most_common(10)],
+    }
+
+
 # ---------------------------------------------------------------- outputs
 
 def write_vault(cfg: Config, m: dict, history: list) -> None:
@@ -525,13 +560,16 @@ def publish(m: dict, history: list) -> str:
                   lambda mo: f"{mo.group(1)}\n{block}\n{mo.group(2)}",
                   README.read_text(encoding="utf-8"), flags=re.S)
     README.write_text(text, encoding="utf-8")
+    DASHBOARD_DATA.parent.mkdir(exist_ok=True)
+    DASHBOARD_DATA.write_text(json.dumps(render_dashboard(m, history), ensure_ascii=False, indent=1),
+                              encoding="utf-8")
     if not (REPO / ".git").exists():
         return "not a git repo"
 
     def git(*args):
         return subprocess.run(["git", "-C", str(REPO), *args], capture_output=True, text=True, timeout=120)
 
-    git("add", "README.md", "history.csv")
+    git("add", "README.md", "history.csv", str(DASHBOARD_DATA.relative_to(REPO)))
     if git("diff", "--cached", "--quiet").returncode == 0:
         return "no changes"
     git("commit", "-m", f"stats: daily update {m['date']}")
@@ -552,7 +590,10 @@ def alert(cfg: Config, message: str) -> None:
     line = f"- [ ] ⚠️ **Honeypot ({datetime.now():%Y-%m-%d}):** {message}"
     try:
         current = cfg.todo.read_text(encoding="utf-8") if cfg.todo.exists() else ""
-        if line not in current:
+        # One open item per problem: skip if the same message is still unchecked from any day.
+        still_open = any(ln.startswith("- [ ] ⚠️ **Honeypot (") and ln.endswith(f":** {message}")
+                         for ln in current.splitlines())
+        if not still_open:
             with cfg.todo.open("a", encoding="utf-8") as f:
                 f.write(("" if current.endswith("\n") or not current else "\n") + line + "\n")
     except OSError:

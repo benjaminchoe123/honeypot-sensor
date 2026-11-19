@@ -1,0 +1,260 @@
+{
+ "updated": "2026-11-19",
+ "days": 14,
+ "kpis": {
+  "attacker_sessions": 59271,
+  "attacker_ips": 907,
+  "countries": 91,
+  "campaigns": 842,
+  "samples": 8,
+  "techniques": 7,
+  "hands_on": 56655,
+  "logins_ok": 58817,
+  "scans": 5434,
+  "ssh": 54723,
+  "telnet": 4548,
+  "top_campaign_ips": 86
+ },
+ "funnel": [
+  {
+   "tier": "Scan",
+   "sessions": 5434
+  },
+  {
+   "tier": "Login attempt",
+   "sessions": 454
+  },
+  {
+   "tier": "Access",
+   "sessions": 2162
+  },
+  {
+   "tier": "Hands-on",
+   "sessions": 56655
+  }
+ ],
+ "history": [
+  {
+   "date": "2026-11-05",
+   "attacker_sessions": 5,
+   "attacker_ips": 4,
+   "hands_on": 4,
+   "countries": 3,
+   "campaigns": null,
+   "samples": 1
+  },
+  {
+   "date": "2026-11-06",
+   "attacker_sessions": 879,
+   "attacker_ips": 68,
+   "hands_on": 822,
+   "countries": 25,
+   "campaigns": 82,
+   "samples": 1
+  },
+  {
+   "date": "2026-11-07",
+   "attacker_sessions": 5112,
+   "attacker_ips": 141,
+   "hands_on": 4970,
+   "countries": 39,
+   "campaigns": 113,
+   "samples": 1
+  },
+  {
+   "date": "2026-11-08",
+   "attacker_sessions": 8964,
+   "attacker_ips": 215,
+   "hands_on": 8722,
+   "countries": 49,
+   "campaigns": 160,
+   "samples": 2
+  },
+  {
+   "date": "2026-11-09",
+   "attacker_sessions": 12562,
+   "attacker_ips": 260,
+   "hands_on": 12212,
+   "countries": 53,
+   "campaigns": 228,
+   "samples": 2
+  },
+  {
+   "date": "2026-11-10",
+   "attacker_sessions": 16936,
+   "attacker_ips": 319,
+   "hands_on": 16376,
+   "countries": 63,
+   "campaigns": 272,
+   "samples": 6
+  },
+  {
+   "date": "2026-11-11",
+   "attacker_sessions": 21773,
+   "attacker_ips": 383,
+   "hands_on": 20966,
+   "countries": 68,
+   "campaigns": 320,
+   "samples": 6
+  },
+  {
+   "date": "2026-11-12",
+   "attacker_sessions": 26057,
+   "attacker_ips": 460,
+   "hands_on": 25038,
+   "countries": 69,
+   "campaigns": 507,
+   "samples": 7
+  },
+  {
+   "date": "2026-11-15",
+   "attacker_sessions": 43636,
+   "attacker_ips": 603,
+   "hands_on": 41967,
+   "countries": 76,
+   "campaigns": 599,
+   "samples": 8
+  },
+  {
+   "date": "2026-11-16",
+   "attacker_sessions": 49446,
+   "attacker_ips": 653,
+   "hands_on": 47484,
+   "countries": 77,
+   "campaigns": 647,
+   "samples": 8
+  },
+  {
+   "date": "2026-11-17",
+   "attacker_sessions": 55592,
+   "attacker_ips": 711,
+   "hands_on": 53339,
+   "countries": 80,
+   "campaigns": 796,
+   "samples": 8
+  },
+  {
+   "date": "2026-11-18",
+   "attacker_sessions": 59271,
+   "attacker_ips": 907,
+   "hands_on": 56655,
+   "countries": 91,
+   "campaigns": 842,
+   "samples": 8
+  }
+ ],
+ "countries": [
+  [
+   "The Netherlands",
+   40861
+  ],
+  [
+   "France",
+   7019
+  ],
+  [
+   "United States",
+   2947
+  ],
+  [
+   "Philippines",
+   2225
+  ],
+  [
+   "China",
+   1880
+  ],
+  [
+   "South Korea",
+   770
+  ],
+  [
+   "United Kingdom",
+   645
+  ],
+  [
+   "Andorra",
+   485
+  ],
+  [
+   "Switzerland",
+   393
+  ],
+  [
+   "Poland",
+   390
+  ]
+ ],
+ "techniques": [
+  [
+   "T1078 Valid Accounts",
+   58817
+  ],
+  [
+   "T1059.004 Unix Shell",
+   56655
+  ],
+  [
+   "T1082 System Information Discovery",
+   50983
+  ],
+  [
+   "T1222.002 Linux File Permissions Modification",
+   1138
+  ],
+  [
+   "T1110 Brute Force",
+   419
+  ],
+  [
+   "T1070 Indicator Removal",
+   189
+  ],
+  [
+   "T1105 Ingress Tool Transfer",
+   69
+  ]
+ ],
+ "credentials": [
+  [
+   "admin / admin",
+   2080
+  ],
+  [
+   "root / root",
+   360
+  ],
+  [
+   "nobody / nobody",
+   354
+  ],
+  [
+   "root / admin",
+   244
+  ],
+  [
+   "admin / ",
+   151
+  ],
+  [
+   "root / 123456",
+   151
+  ],
+  [
+   "root / xc3511",
+   122
+  ],
+  [
+   "root / 12345",
+   115
+  ],
+  [
+   "ubnt / ubnt",
+   113
+  ],
+  [
+   "support / support",
+   110
+  ]
+ ]
+}
