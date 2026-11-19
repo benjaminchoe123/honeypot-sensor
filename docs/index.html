@@ -81,6 +81,13 @@ th { color: var(--text-secondary); font-weight: 600; }
 footer { margin-top: 28px; font-size: 13px; color: var(--text-muted); max-width: 75ch; }
 footer a, header a { color: var(--accent); }
 .err { color: var(--text-secondary); padding: 40px 0; }
+.chips { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chips li { font-size: 12px; color: var(--text-secondary); border: 1px solid var(--border);
+  background: var(--surface); border-radius: 999px; padding: 3px 10px; }
+.findings { margin-bottom: 16px; }
+.findings ol { margin: 0; padding-left: 20px; }
+.findings li { margin: 0 0 8px; max-width: 80ch; }
+.findings li:last-child { margin-bottom: 0; }
 </style>
 </head>
 <body>
@@ -91,9 +98,19 @@ footer a, header a { color: var(--accent); }
       how far the attacker got, mapped to MITRE ATT&amp;CK and clustered into campaigns. This page
       rebuilds itself from the sensor's logs every night.</p>
     <div class="meta" id="meta">Loading…</div>
+    <ul class="chips" aria-label="Skills used">
+      <li>Python</li><li>Linux hardening</li><li>Google Cloud</li><li>iptables egress filtering</li>
+      <li>Cowrie</li><li>MITRE ATT&amp;CK</li><li>Threat intel</li><li>pytest + GitHub Actions CI</li>
+    </ul>
   </header>
 
   <section class="kpis" id="kpis" aria-label="Headline numbers"></section>
+
+  <section class="card findings" id="findings" hidden>
+    <h2>Key findings</h2>
+    <p class="sub">Written by hand from the data, not generated.</p>
+    <ol id="findings-list"></ol>
+  </section>
 
   <div class="grid">
     <div class="card"><h2>Attacker sessions</h2><p class="sub">Cumulative, all-time</p><div id="ch-sessions"></div></div>
@@ -216,6 +233,15 @@ function table(hist) {
     const tr = el("tr"); cols.forEach(([k]) => tr.append(el("td", null, k === "date" ? r[k] : fmt(r[k])))); t.append(tr);
   });
 }
+
+// Hand-written findings live in findings.json (a plain list of strings) so the nightly job never overwrites them.
+fetch("findings.json", { cache: "no-store" }).then(r => r.json()).then(list => {
+  const items = (Array.isArray(list) ? list : []).filter(s => typeof s === "string" && s.trim());
+  if (!items.length) return;
+  const ol = document.getElementById("findings-list");
+  items.forEach(s => ol.append(el("li", null, s)));
+  document.getElementById("findings").hidden = false;
+}).catch(() => {});
 
 fetch("data.json", { cache: "no-store" }).then(r => r.json()).then(d => {
   document.getElementById("meta").textContent =
