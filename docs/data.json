@@ -2,35 +2,91 @@
  "updated": "2026-11-19",
  "days": 14,
  "kpis": {
-  "attacker_sessions": 59271,
-  "attacker_ips": 907,
-  "countries": 91,
-  "campaigns": 842,
-  "samples": 8,
+  "attacker_sessions": 67509,
+  "attacker_ips": 1093,
+  "countries": 96,
+  "campaigns": 934,
+  "samples": 33,
   "techniques": 7,
-  "hands_on": 56655,
-  "logins_ok": 58817,
-  "scans": 5434,
-  "ssh": 54723,
-  "telnet": 4548,
-  "top_campaign_ips": 86
+  "hands_on": 64480,
+  "logins_ok": 66989,
+  "scans": 5739,
+  "ssh": 62507,
+  "telnet": 5002,
+  "top_campaign_ips": 91,
+  "connections": 73248
  },
- "funnel": [
+ "funnel": {
+  "connections": 73248,
+  "scans": 5739,
+  "tried_login": 67509,
+  "shell": 64480
+ },
+ "daily": [
   {
-   "tier": "Scan",
-   "sessions": 5434
+   "date": "2026-11-06",
+   "sessions": 636,
+   "new_ips": 66
   },
   {
-   "tier": "Login attempt",
-   "sessions": 454
+   "date": "2026-11-07",
+   "sessions": 4457,
+   "new_ips": 71
   },
   {
-   "tier": "Access",
-   "sessions": 2162
+   "date": "2026-11-08",
+   "sessions": 3835,
+   "new_ips": 75
   },
   {
-   "tier": "Hands-on",
-   "sessions": 56655
+   "date": "2026-11-09",
+   "sessions": 3605,
+   "new_ips": 44
+  },
+  {
+   "date": "2026-11-10",
+   "sessions": 4378,
+   "new_ips": 58
+  },
+  {
+   "date": "2026-11-11",
+   "sessions": 4784,
+   "new_ips": 65
+  },
+  {
+   "date": "2026-11-12",
+   "sessions": 4289,
+   "new_ips": 74
+  },
+  {
+   "date": "2026-11-13",
+   "sessions": 6315,
+   "new_ips": 65
+  },
+  {
+   "date": "2026-11-14",
+   "sessions": 6035,
+   "new_ips": 43
+  },
+  {
+   "date": "2026-11-15",
+   "sessions": 5116,
+   "new_ips": 39
+  },
+  {
+   "date": "2026-11-16",
+   "sessions": 4804,
+   "new_ips": 51
+  },
+  {
+   "date": "2026-11-17",
+   "sessions": 7242,
+   "new_ips": 54
+  },
+  {
+   "date": "2026-11-18",
+   "sessions": 3695,
+   "new_ips": 185
   }
  ],
  "history": [
@@ -141,120 +197,1137 @@
    "countries": 91,
    "campaigns": 842,
    "samples": 8
+  },
+  {
+   "date": "2026-11-19",
+   "attacker_sessions": 67509,
+   "attacker_ips": 1093,
+   "hands_on": 64480,
+   "countries": 96,
+   "campaigns": 934,
+   "samples": 33
   }
  ],
  "countries": [
-  [
-   "The Netherlands",
-   40861
-  ],
-  [
-   "France",
-   7019
-  ],
-  [
-   "United States",
-   2947
-  ],
-  [
-   "Philippines",
-   2225
-  ],
-  [
-   "China",
-   1880
-  ],
-  [
-   "South Korea",
-   770
-  ],
-  [
-   "United Kingdom",
-   645
-  ],
-  [
-   "Andorra",
-   485
-  ],
-  [
-   "Switzerland",
-   393
-  ],
-  [
-   "Poland",
-   390
-  ]
+  {
+   "name": "China",
+   "cc": "CN",
+   "atlas_id": "156",
+   "ips": 135,
+   "sessions": 2075
+  },
+  {
+   "name": "South Korea",
+   "cc": "KR",
+   "atlas_id": "410",
+   "ips": 108,
+   "sessions": 855
+  },
+  {
+   "name": "Brazil",
+   "cc": "BR",
+   "atlas_id": "076",
+   "ips": 94,
+   "sessions": 110
+  },
+  {
+   "name": "United States",
+   "cc": "US",
+   "atlas_id": "840",
+   "ips": 88,
+   "sessions": 3161
+  },
+  {
+   "name": "Russia",
+   "cc": "RU",
+   "atlas_id": "643",
+   "ips": 77,
+   "sessions": 113
+  },
+  {
+   "name": "Ukraine",
+   "cc": "UA",
+   "atlas_id": "804",
+   "ips": 59,
+   "sessions": 329
+  },
+  {
+   "name": "The Netherlands",
+   "cc": "NL",
+   "atlas_id": "528",
+   "ips": 50,
+   "sessions": 46936
+  },
+  {
+   "name": "India",
+   "cc": "IN",
+   "atlas_id": "356",
+   "ips": 42,
+   "sessions": 177
+  },
+  {
+   "name": "France",
+   "cc": "FR",
+   "atlas_id": "250",
+   "ips": 38,
+   "sessions": 8403
+  },
+  {
+   "name": "Argentina",
+   "cc": "AR",
+   "atlas_id": "032",
+   "ips": 31,
+   "sessions": 33
+  },
+  {
+   "name": "Belgium",
+   "cc": "BE",
+   "atlas_id": "056",
+   "ips": 27,
+   "sessions": 51
+  },
+  {
+   "name": "Taiwan",
+   "cc": "TW",
+   "atlas_id": "158",
+   "ips": 23,
+   "sessions": 48
+  },
+  {
+   "name": "Hong Kong",
+   "cc": "HK",
+   "atlas_id": "344",
+   "ips": 22,
+   "sessions": 43
+  },
+  {
+   "name": "Sweden",
+   "cc": "SE",
+   "atlas_id": "752",
+   "ips": 21,
+   "sessions": 76
+  },
+  {
+   "name": "Germany",
+   "cc": "DE",
+   "atlas_id": "276",
+   "ips": 12,
+   "sessions": 225
+  },
+  {
+   "name": "Chile",
+   "cc": "CL",
+   "atlas_id": "152",
+   "ips": 12,
+   "sessions": 14
+  },
+  {
+   "name": "Vietnam",
+   "cc": "VN",
+   "atlas_id": "704",
+   "ips": 11,
+   "sessions": 24
+  },
+  {
+   "name": "Pakistan",
+   "cc": "PK",
+   "atlas_id": "586",
+   "ips": 10,
+   "sessions": 10
+  },
+  {
+   "name": "Iraq",
+   "cc": "IQ",
+   "atlas_id": "368",
+   "ips": 10,
+   "sessions": 11
+  },
+  {
+   "name": "Uzbekistan",
+   "cc": "UZ",
+   "atlas_id": "860",
+   "ips": 9,
+   "sessions": 10
+  },
+  {
+   "name": "Mexico",
+   "cc": "MX",
+   "atlas_id": "484",
+   "ips": 9,
+   "sessions": 9
+  },
+  {
+   "name": "Italy",
+   "cc": "IT",
+   "atlas_id": "380",
+   "ips": 8,
+   "sessions": 10
+  },
+  {
+   "name": "South Africa",
+   "cc": "ZA",
+   "atlas_id": "710",
+   "ips": 8,
+   "sessions": 8
+  },
+  {
+   "name": "United Kingdom",
+   "cc": "GB",
+   "atlas_id": "826",
+   "ips": 8,
+   "sessions": 688
+  },
+  {
+   "name": "Thailand",
+   "cc": "TH",
+   "atlas_id": "764",
+   "ips": 8,
+   "sessions": 12
+  },
+  {
+   "name": "Portugal",
+   "cc": "PT",
+   "atlas_id": "620",
+   "ips": 7,
+   "sessions": 9
+  },
+  {
+   "name": "Egypt",
+   "cc": "EG",
+   "atlas_id": "818",
+   "ips": 7,
+   "sessions": 8
+  },
+  {
+   "name": "Spain",
+   "cc": "ES",
+   "atlas_id": "724",
+   "ips": 6,
+   "sessions": 63
+  },
+  {
+   "name": "Israel",
+   "cc": "IL",
+   "atlas_id": "376",
+   "ips": 6,
+   "sessions": 6
+  },
+  {
+   "name": "Azerbaijan",
+   "cc": "AZ",
+   "atlas_id": "031",
+   "ips": 6,
+   "sessions": 6
+  },
+  {
+   "name": "Canada",
+   "cc": "CA",
+   "atlas_id": "124",
+   "ips": 6,
+   "sessions": 7
+  },
+  {
+   "name": "Indonesia",
+   "cc": "ID",
+   "atlas_id": "360",
+   "ips": 6,
+   "sessions": 6
+  },
+  {
+   "name": "Japan",
+   "cc": "JP",
+   "atlas_id": "392",
+   "ips": 6,
+   "sessions": 13
+  },
+  {
+   "name": "Andorra",
+   "cc": "AD",
+   "atlas_id": "020",
+   "ips": 5,
+   "sessions": 519
+  },
+  {
+   "name": "Singapore",
+   "cc": "SG",
+   "atlas_id": "702",
+   "ips": 4,
+   "sessions": 163
+  },
+  {
+   "name": "Slovenia",
+   "cc": "SI",
+   "atlas_id": "705",
+   "ips": 4,
+   "sessions": 9
+  },
+  {
+   "name": "Turkey",
+   "cc": "TR",
+   "atlas_id": "792",
+   "ips": 4,
+   "sessions": 5
+  },
+  {
+   "name": "Morocco",
+   "cc": "MA",
+   "atlas_id": "504",
+   "ips": 4,
+   "sessions": 5
+  },
+  {
+   "name": "Australia",
+   "cc": "AU",
+   "atlas_id": "036",
+   "ips": 4,
+   "sessions": 19
+  },
+  {
+   "name": "Netherlands",
+   "cc": "NL",
+   "atlas_id": "528",
+   "ips": 4,
+   "sessions": 8
+  },
+  {
+   "name": "Colombia",
+   "cc": "CO",
+   "atlas_id": "170",
+   "ips": 4,
+   "sessions": 5
+  },
+  {
+   "name": "Venezuela",
+   "cc": "VE",
+   "atlas_id": "862",
+   "ips": 4,
+   "sessions": 5
+  },
+  {
+   "name": "Peru",
+   "cc": "PE",
+   "atlas_id": "604",
+   "ips": 3,
+   "sessions": 3
+  },
+  {
+   "name": "Malaysia",
+   "cc": "MY",
+   "atlas_id": "458",
+   "ips": 3,
+   "sessions": 3
+  },
+  {
+   "name": "Philippines",
+   "cc": "PH",
+   "atlas_id": "608",
+   "ips": 3,
+   "sessions": 2225
+  },
+  {
+   "name": "Bulgaria",
+   "cc": "BG",
+   "atlas_id": "100",
+   "ips": 3,
+   "sessions": 4
+  },
+  {
+   "name": "Bolivia",
+   "cc": "BO",
+   "atlas_id": "068",
+   "ips": 3,
+   "sessions": 3
+  },
+  {
+   "name": "Kazakhstan",
+   "cc": "KZ",
+   "atlas_id": "398",
+   "ips": 3,
+   "sessions": 3
+  },
+  {
+   "name": "Poland",
+   "cc": "PL",
+   "atlas_id": "616",
+   "ips": 3,
+   "sessions": 390
+  },
+  {
+   "name": "Hungary",
+   "cc": "HU",
+   "atlas_id": "348",
+   "ips": 3,
+   "sessions": 89
+  },
+  {
+   "name": "Türkiye",
+   "cc": "TR",
+   "atlas_id": "792",
+   "ips": 3,
+   "sessions": 5
+  },
+  {
+   "name": "Switzerland",
+   "cc": "CH",
+   "atlas_id": "756",
+   "ips": 3,
+   "sessions": 394
+  },
+  {
+   "name": "Finland",
+   "cc": "FI",
+   "atlas_id": "246",
+   "ips": 3,
+   "sessions": 3
+  },
+  {
+   "name": "Lithuania",
+   "cc": "LT",
+   "atlas_id": "440",
+   "ips": 2,
+   "sessions": 3
+  },
+  {
+   "name": "Ireland",
+   "cc": "IE",
+   "atlas_id": "372",
+   "ips": 2,
+   "sessions": 2
+  },
+  {
+   "name": "Panama",
+   "cc": "PA",
+   "atlas_id": "591",
+   "ips": 2,
+   "sessions": 21
+  },
+  {
+   "name": "Kenya",
+   "cc": "KE",
+   "atlas_id": "404",
+   "ips": 2,
+   "sessions": 2
+  },
+  {
+   "name": "Syria",
+   "cc": "SY",
+   "atlas_id": "760",
+   "ips": 2,
+   "sessions": 2
+  },
+  {
+   "name": "Costa Rica",
+   "cc": "CR",
+   "atlas_id": "188",
+   "ips": 2,
+   "sessions": 2
+  },
+  {
+   "name": "Armenia",
+   "cc": "AM",
+   "atlas_id": "051",
+   "ips": 2,
+   "sessions": 2
+  },
+  {
+   "name": "Myanmar",
+   "cc": "MM",
+   "atlas_id": "104",
+   "ips": 2,
+   "sessions": 2
+  },
+  {
+   "name": "Georgia",
+   "cc": "GE",
+   "atlas_id": "268",
+   "ips": 2,
+   "sessions": 2
+  },
+  {
+   "name": "Bangladesh",
+   "cc": "BD",
+   "atlas_id": "050",
+   "ips": 2,
+   "sessions": 12
+  },
+  {
+   "name": "Zambia",
+   "cc": "ZM",
+   "atlas_id": "894",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Estonia",
+   "cc": "EE",
+   "atlas_id": "233",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Burkina Faso",
+   "cc": "BF",
+   "atlas_id": "854",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Nigeria",
+   "cc": "NG",
+   "atlas_id": "566",
+   "ips": 1,
+   "sessions": 2
+  },
+  {
+   "name": "New Zealand",
+   "cc": "NZ",
+   "atlas_id": "554",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Ethiopia",
+   "cc": "ET",
+   "atlas_id": "231",
+   "ips": 1,
+   "sessions": 3
+  },
+  {
+   "name": "Ecuador",
+   "cc": "EC",
+   "atlas_id": "218",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Ivory Coast",
+   "cc": "CI",
+   "atlas_id": "384",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Belarus",
+   "cc": "BY",
+   "atlas_id": "112",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Moldova",
+   "cc": "MD",
+   "atlas_id": "498",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Rwanda",
+   "cc": "RW",
+   "atlas_id": "646",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Mauritius",
+   "cc": "MU",
+   "atlas_id": "480",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Lesotho",
+   "cc": "LS",
+   "atlas_id": "426",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Serbia",
+   "cc": "RS",
+   "atlas_id": "688",
+   "ips": 1,
+   "sessions": 2
+  },
+  {
+   "name": "Bosnia and Herzegovina",
+   "cc": "BA",
+   "atlas_id": "070",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Palestine",
+   "cc": "PS",
+   "atlas_id": "275",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Angola",
+   "cc": "AO",
+   "atlas_id": "024",
+   "ips": 1,
+   "sessions": 8
+  },
+  {
+   "name": "Czechia",
+   "cc": "CZ",
+   "atlas_id": "203",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Uganda",
+   "cc": "UG",
+   "atlas_id": "800",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Lebanon",
+   "cc": "LB",
+   "atlas_id": "422",
+   "ips": 1,
+   "sessions": 6
+  },
+  {
+   "name": "Puerto Rico",
+   "cc": "PR",
+   "atlas_id": "630",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Togo",
+   "cc": "TG",
+   "atlas_id": "768",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Uruguay",
+   "cc": "UY",
+   "atlas_id": "858",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Senegal",
+   "cc": "SN",
+   "atlas_id": "686",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Libya",
+   "cc": "LY",
+   "atlas_id": "434",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Cabo Verde",
+   "cc": "CV",
+   "atlas_id": "132",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "United Arab Emirates",
+   "cc": "AE",
+   "atlas_id": "784",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Cambodia",
+   "cc": "KH",
+   "atlas_id": "116",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Gabon",
+   "cc": "GA",
+   "atlas_id": "266",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Malawi",
+   "cc": "MW",
+   "atlas_id": "454",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Tunisia",
+   "cc": "TN",
+   "atlas_id": "788",
+   "ips": 1,
+   "sessions": 2
+  },
+  {
+   "name": "Romania",
+   "cc": "RO",
+   "atlas_id": "642",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Afghanistan",
+   "cc": "AF",
+   "atlas_id": "004",
+   "ips": 1,
+   "sessions": 1
+  }
  ],
  "techniques": [
-  [
-   "T1078 Valid Accounts",
-   58817
-  ],
-  [
-   "T1059.004 Unix Shell",
-   56655
-  ],
-  [
-   "T1082 System Information Discovery",
-   50983
-  ],
-  [
-   "T1222.002 Linux File Permissions Modification",
-   1138
-  ],
-  [
-   "T1110 Brute Force",
-   419
-  ],
-  [
-   "T1070 Indicator Removal",
-   189
-  ],
-  [
-   "T1105 Ingress Tool Transfer",
-   69
-  ]
+  {
+   "id": "T1078",
+   "name": "Valid Accounts",
+   "sessions": 66989,
+   "meaning": "Logged in with a real (here: default or guessed) username and password",
+   "common": true
+  },
+  {
+   "id": "T1059.004",
+   "name": "Unix Shell",
+   "sessions": 64464,
+   "meaning": "Ran commands in a Linux shell",
+   "common": true
+  },
+  {
+   "id": "T1082",
+   "name": "System Information Discovery",
+   "sessions": 58479,
+   "meaning": "Checked the CPU, OS or device type, usually to pick the right malware build",
+   "common": true
+  },
+  {
+   "id": "T1222.002",
+   "name": "Linux File Permissions Modification",
+   "sessions": 1295,
+   "meaning": "Changed file permissions, usually to make a dropped file executable",
+   "common": false
+  },
+  {
+   "id": "T1110",
+   "name": "Brute Force",
+   "sessions": 476,
+   "meaning": "Kept guessing passwords from the same IP",
+   "common": false
+  },
+  {
+   "id": "T1070",
+   "name": "Indicator Removal",
+   "sessions": 226,
+   "meaning": "Deleted files or shell history to cover its tracks",
+   "common": false
+  },
+  {
+   "id": "T1105",
+   "name": "Ingress Tool Transfer",
+   "sessions": 90,
+   "meaning": "Pulled a file onto the machine from an outside server",
+   "common": false
+  }
+ ],
+ "campaigns": [
+  {
+   "id": "ed7cfce5",
+   "ips": 91,
+   "sessions": 959,
+   "first_seen": "2026-11-06",
+   "last_seen": "2026-11-19",
+   "tags": [
+    "escapes restricted shell",
+    "fingerprints device"
+   ]
+  },
+  {
+   "id": "7109427c",
+   "ips": 90,
+   "sessions": 900,
+   "first_seen": "2026-11-06",
+   "last_seen": "2026-11-19",
+   "tags": [
+    "hunts for writable folder",
+    "makes file executable",
+    "escapes restricted shell"
+   ]
+  },
+  {
+   "id": "3e01d27c",
+   "ips": 88,
+   "sessions": 91,
+   "first_seen": "2026-11-06",
+   "last_seen": "2026-11-19",
+   "tags": [
+    "hunts for writable folder",
+    "escapes restricted shell",
+    "fingerprints device"
+   ]
+  },
+  {
+   "id": "975f7cb0",
+   "ips": 47,
+   "sessions": 51,
+   "first_seen": "2026-11-06",
+   "last_seen": "2026-11-19",
+   "tags": [
+    "hunts for writable folder",
+    "kills processes",
+    "escapes restricted shell"
+   ]
+  },
+  {
+   "id": "7ab552f0",
+   "ips": 46,
+   "sessions": 54818,
+   "first_seen": "2026-11-07",
+   "last_seen": "2026-11-19",
+   "tags": [
+    "recon only"
+   ]
+  },
+  {
+   "id": "82363f9d",
+   "ips": 17,
+   "sessions": 17,
+   "first_seen": "2026-11-06",
+   "last_seen": "2026-11-19",
+   "tags": [
+    "probes for VoIP (SIP)"
+   ]
+  },
+  {
+   "id": "6fa4c8ac",
+   "ips": 15,
+   "sessions": 17,
+   "first_seen": "2026-11-06",
+   "last_seen": "2026-11-19",
+   "tags": [
+    "recon only"
+   ]
+  },
+  {
+   "id": "f7303c94",
+   "ips": 11,
+   "sessions": 14,
+   "first_seen": "2026-11-06",
+   "last_seen": "2026-11-19",
+   "tags": [
+    "escapes restricted shell"
+   ]
+  }
+ ],
+ "samples": [
+  {
+   "sha256": "35b1e72dc1201d2ffaa82f24043f53ef0f52c4f86be9abe6d23fa52f91383468",
+   "first_seen": "2026-11-06",
+   "sessions": 10,
+   "ips": 10,
+   "size": 80,
+   "kind": "download"
+  },
+  {
+   "sha256": "a151d3f4f2422531f30a843ffb35479596c86722bb103bdf8591105687f9b125",
+   "first_seen": "2026-11-06",
+   "sessions": 135,
+   "ips": 8,
+   "size": 3373344,
+   "kind": "upload"
+  },
+  {
+   "sha256": "94f2e4d8d4436874785cd14e6e6d403507b8750852f7f2040352069a75da4c00",
+   "first_seen": "2026-11-09",
+   "sessions": 9,
+   "ips": 8,
+   "size": 30304472,
+   "kind": "upload"
+  },
+  {
+   "sha256": "9b5cfdb8a10c3a1db7f9179afa60af697b7d10cce75acb989de3f7e465f2aa7d",
+   "first_seen": "2026-11-13",
+   "sessions": 6,
+   "ips": 5,
+   "size": 1137,
+   "kind": "download"
+  },
+  {
+   "sha256": "6d1fe6ab3cd04ca5d1ab790339ee2b6577553bc042af3b7587ece0c195267c9b",
+   "first_seen": "2026-11-08",
+   "sessions": 6,
+   "ips": 2,
+   "size": 4745,
+   "kind": "upload"
+  },
+  {
+   "sha256": "39be6853a8204ce6455a373a6ffb4cb4672d4a62d90be69f7d6eeb66cda10b96",
+   "first_seen": "2026-11-10",
+   "sessions": 34,
+   "ips": 1,
+   "size": 3241,
+   "kind": "download"
+  },
+  {
+   "sha256": "3674a103804cac96027fe1cf62aaab4948c1d547d1c885542177a263103b4260",
+   "first_seen": "2026-11-10",
+   "sessions": 34,
+   "ips": 1,
+   "size": 193352,
+   "kind": "download"
+  },
+  {
+   "sha256": "5d9e4bdee8c8fcb0b534f6336ecace4696d8ed3038de42a969c6e037e41d1de5",
+   "first_seen": "2026-11-14",
+   "sessions": 26,
+   "ips": 1,
+   "size": 148428,
+   "kind": "download"
+  },
+  {
+   "sha256": "9f973e0abb6dd46d331670f6cea403334f912c0af913087fa5bc2ce81aa6d199",
+   "first_seen": "2026-11-06",
+   "sessions": 1,
+   "ips": 1,
+   "size": 983040,
+   "kind": "upload"
+  },
+  {
+   "sha256": "0db2c6afeb0ba8623c21f6f53783b2592fb6d20105ec0bf9a6b7fd4e59ae3712",
+   "first_seen": "2026-11-07",
+   "sessions": 1,
+   "ips": 1,
+   "size": 22413312,
+   "kind": "upload"
+  },
+  {
+   "sha256": "2ca52a61c10810888b4a6275e443cd10485143a3d048074170e78df732b83142",
+   "first_seen": "2026-11-07",
+   "sessions": 1,
+   "ips": 1,
+   "size": 19529728,
+   "kind": "upload"
+  },
+  {
+   "sha256": "9fa061a2a90c76666b98a8b17c868ddcabc49f1a148127841d6b7b42ff3a8c2a",
+   "first_seen": "2026-11-08",
+   "sessions": 1,
+   "ips": 1,
+   "size": 2818048,
+   "kind": "upload"
+  },
+  {
+   "sha256": "ac485a3ad457a1e550ced3b48c9bd25126b3ca585478f3d99734c2c54fcabdd9",
+   "first_seen": "2026-11-08",
+   "sessions": 1,
+   "ips": 1,
+   "size": 589824,
+   "kind": "upload"
+  },
+  {
+   "sha256": "8b8dd29404c9ce38f2a5dbed8989a592506d853d91517ff1e65019cd437f3aa0",
+   "first_seen": "2026-11-10",
+   "sessions": 1,
+   "ips": 1,
+   "size": 2729,
+   "kind": "download"
+  },
+  {
+   "sha256": "e948036f1c3b3024a6864fa1c49332c80e1fd28484cf487233a50154ffe104f8",
+   "first_seen": "2026-11-12",
+   "sessions": 1,
+   "ips": 1,
+   "size": 131072,
+   "kind": "upload"
+  },
+  {
+   "sha256": "f8e648e6340a0466cc1502fc1bdf9574be058757d3278143e3d80dbbf481b12f",
+   "first_seen": "2026-11-14",
+   "sessions": 1,
+   "ips": 1,
+   "size": 16154624,
+   "kind": "upload"
+  },
+  {
+   "sha256": "816db9a7ec1145d1511c0f6042a1616ae469224f240f3cec81a4282d43a879d7",
+   "first_seen": "2026-11-16",
+   "sessions": 1,
+   "ips": 1,
+   "size": 28803072,
+   "kind": "upload"
+  },
+  {
+   "sha256": "48e8ad0a9587c30feea0e800e250ffe96036ca0c201ee90494101012de8579d1",
+   "first_seen": "2026-11-17",
+   "sessions": 1,
+   "ips": 1,
+   "size": 16089088,
+   "kind": "upload"
+  },
+  {
+   "sha256": "4757f0ad27bc4a13d3c9c50645359a19e6658962f864c4c580323e32824d33c6",
+   "first_seen": "2026-11-18",
+   "sessions": 1,
+   "ips": 1,
+   "size": 5275648,
+   "kind": "upload"
+  },
+  {
+   "sha256": "c92de01c659f4642bc79c3a83e06814082c919253c89e997bc629dfb3ad9f178",
+   "first_seen": "2026-11-18",
+   "sessions": 1,
+   "ips": 1,
+   "size": 22609920,
+   "kind": "upload"
+  },
+  {
+   "sha256": "d2846c8f6d56f5d638cf701d2b0862540003956629aa174516fbae90c3fbcc16",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 23887872,
+   "kind": "upload"
+  },
+  {
+   "sha256": "fdafe0d1917b7f38d389a574a3b43d4fd054702987fda9ec89ab93b178297389",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 30212096,
+   "kind": "upload"
+  },
+  {
+   "sha256": "d16bffbd3ba31504aea1fc01e66e29ad5927830ea5e2cc49369e82a7c68ec5c0",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 524288,
+   "kind": "upload"
+  },
+  {
+   "sha256": "36815382727fe02755ee0a6eb4cdb66b359e140f6a077bb8c3de57a246fad5d7",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 4157,
+   "kind": "download"
+  },
+  {
+   "sha256": "cd4aa849747049a5aa17c8efa4ccc10ad2cf9d92671d0b90ac4720406b0e8602",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 137388,
+   "kind": "download"
+  },
+  {
+   "sha256": "ea459bac849468ef33494440a264756cd4f811cb7db94f02955571cb89252530",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 248992,
+   "kind": "download"
+  },
+  {
+   "sha256": "854a0080a06fd571bb88e0af121cb8f55e5d8a847300bfaa87cf321aec03f987",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 253088,
+   "kind": "download"
+  },
+  {
+   "sha256": "28480685af50275993284aae4fdf3299062750c650c0b78705f60c146938cd4a",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 264874,
+   "kind": "download"
+  },
+  {
+   "sha256": "bda908bfacbce3347b45850b81bbba87cf1a41e3bfbf7529b2c88b3802af050f",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 203420,
+   "kind": "download"
+  },
+  {
+   "sha256": "396541b448bcac2b0077e5dce6668200c6871a9c7a90a7d043085bba48b0ceb5",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 87460,
+   "kind": "download"
+  },
+  {
+   "sha256": "bef878a1a1c651b517d0b5eba2285d8f4b0d2c90af8d25176cefc4b682f44ec3",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 186976,
+   "kind": "download"
+  },
+  {
+   "sha256": "29f9d25548bca569672c216e8115686c9e0a43320de623c2886fd37b0ff679e2",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 182992,
+   "kind": "download"
+  },
+  {
+   "sha256": "6808977195280f51f3308cdafb44829dd754f5d2c90ad4e572ea7ff2d6797bbd",
+   "first_seen": "2026-11-19",
+   "sessions": 1,
+   "ips": 1,
+   "size": 196288,
+   "kind": "download"
+  }
  ],
  "credentials": [
   [
    "admin / admin",
-   2080
+   2358
   ],
   [
    "root / root",
-   360
+   421
   ],
   [
    "nobody / nobody",
-   354
+   365
   ],
   [
    "root / admin",
-   244
-  ],
-  [
-   "admin / ",
-   151
+   258
   ],
   [
    "root / 123456",
-   151
+   162
+  ],
+  [
+   "admin / (blank)",
+   152
   ],
   [
    "root / xc3511",
-   122
+   128
+  ],
+  [
+   "root / (blank)",
+   124
   ],
   [
    "root / 12345",
-   115
-  ],
-  [
-   "ubnt / ubnt",
-   113
+   122
   ],
   [
    "support / support",
-   110
+   118
   ]
  ]
 }
