@@ -8,6 +8,9 @@ An internet-facing **SSH + Telnet honeypot** on Google Cloud that records real a
 Python tool that turns raw logs into daily metrics mapped to **MITRE ATT&CK**. The numbers below
 come from live data and update automatically every day.
 
+**📊 Live dashboard: https://benjaminchoe123.github.io/honeypot-sensor/** (attack map, daily activity,
+top campaigns, captured malware, ATT&CK techniques)
+
 ## Live stats
 
 <!-- STATS:START -->

