@@ -18,50 +18,50 @@ _Last updated 2026-11-19 · 14 days of collection · updated automatically every
 
 | Metric | Value |
 |---|---|
-| Attacker sessions | 67,509 |
-| Unique attacker IPs | 1,093 |
+| Attacker sessions | 68,297 |
+| Unique attacker IPs | 1,109 |
 | Countries | 96 |
-| Successful logins | 66,989 |
-| Hands-on sessions | 64,480 |
-| Distinct attack campaigns | 934 (largest: 91 source IPs) |
-| Malware samples captured | 33 |
+| Successful logins | 67,770 |
+| Hands-on sessions | 65,220 |
+| Distinct attack campaigns | 935 (largest: 91 source IPs) |
+| Malware samples captured | 34 |
 | MITRE ATT&CK techniques observed | 7 |
-| Scanner connections filtered out | 5,739 |
+| Scanner connections filtered out | 5,789 |
 
 **Attack-depth funnel**
 
 | Tier | Sessions | Meaning |
 |---|---|---|
-| Scan | 5,739 | Connected, never tried to log in |
-| Login attempt | 520 | Tried credentials, never got in |
-| Access | 2,509 | Logged in, did nothing |
-| Hands-on | 64,480 | Logged in and ran commands or downloaded files |
+| Scan | 5,789 | Connected, never tried to log in |
+| Login attempt | 527 | Tried credentials, never got in |
+| Access | 2,550 | Logged in, did nothing |
+| Hands-on | 65,220 | Logged in and ran commands or downloaded files |
 
 **ATT&CK techniques observed** (sessions)
 
-- T1078 Valid Accounts (66,989)
-- T1059.004 Unix Shell (64,464)
-- T1082 System Information Discovery (58,479)
-- T1222.002 Linux File Permissions Modification (1,295)
-- T1110 Brute Force (476)
-- T1070 Indicator Removal (226)
-- T1105 Ingress Tool Transfer (90)
+- T1078 Valid Accounts (67,770)
+- T1059.004 Unix Shell (65,204)
+- T1082 System Information Discovery (59,215)
+- T1222.002 Linux File Permissions Modification (1,301)
+- T1110 Brute Force (481)
+- T1070 Indicator Removal (229)
+- T1105 Ingress Tool Transfer (94)
 
 **Top source countries** (unique attacker IPs; location of the attacking machine, usually an infected device)
 
-- China (135 unique IPs)
-- South Korea (108 unique IPs)
-- Brazil (94 unique IPs)
-- United States (88 unique IPs)
+- China (137 unique IPs)
+- South Korea (109 unique IPs)
+- Brazil (95 unique IPs)
+- United States (89 unique IPs)
 - Russia (77 unique IPs)
 
 **Most-tried credentials**
 
-- admin / admin (2,358)
-- root / root (421)
+- admin / admin (2,371)
+- root / root (427)
 - nobody / nobody (365)
-- root / admin (258)
-- root / 123456 (162)
+- root / admin (262)
+- root / 123456 (163)
 
 <details><summary>Daily growth</summary>
 
@@ -79,7 +79,7 @@ _Last updated 2026-11-19 · 14 days of collection · updated automatically every
 | 2026-11-16 | 49446 | 653 | 47484 | 77 | 8 |
 | 2026-11-17 | 55592 | 711 | 53339 | 80 | 8 |
 | 2026-11-18 | 59271 | 907 | 56655 | 91 | 8 |
-| 2026-11-19 | 67509 | 1093 | 64480 | 96 | 33 |
+| 2026-11-19 | 68297 | 1109 | 65220 | 96 | 34 |
 
 </details>
 <!-- STATS:END -->
