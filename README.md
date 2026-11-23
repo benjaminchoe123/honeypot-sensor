@@ -14,54 +14,54 @@ top campaigns, captured malware, ATT&CK techniques)
 ## Live stats
 
 <!-- STATS:START -->
-_Last updated 2026-11-21 · 16 days of collection · updated automatically every day._
+_Last updated 2026-11-23 · 18 days of collection · updated automatically every day._
 
 | Metric | Value |
 |---|---|
-| Attacker sessions | 75,391 |
-| Unique attacker IPs | 1,449 |
-| Countries | 100 |
-| Successful logins | 74,748 |
-| Hands-on sessions | 71,438 |
-| Distinct attack campaigns | 1,064 (largest: 109 source IPs) |
-| Malware samples captured | 40 |
+| Attacker sessions | 81,655 |
+| Unique attacker IPs | 1,712 |
+| Countries | 104 |
+| Successful logins | 80,943 |
+| Hands-on sessions | 77,043 |
+| Distinct attack campaigns | 1,123 (largest: 126 source IPs) |
+| Malware samples captured | 41 |
 | MITRE ATT&CK techniques observed | 7 |
-| Scanner connections filtered out | 6,777 |
+| Scanner connections filtered out | 7,427 |
 
 **Attack-depth funnel**
 
 | Tier | Sessions | Meaning |
 |---|---|---|
-| Scan | 6,777 | Connected, never tried to log in |
-| Login attempt | 643 | Tried credentials, never got in |
-| Access | 3,310 | Logged in, did nothing |
-| Hands-on | 71,438 | Logged in and ran commands or downloaded files |
+| Scan | 7,427 | Connected, never tried to log in |
+| Login attempt | 712 | Tried credentials, never got in |
+| Access | 3,900 | Logged in, did nothing |
+| Hands-on | 77,043 | Logged in and ran commands or downloaded files |
 
 **ATT&CK techniques observed** (sessions)
 
-- T1078 Valid Accounts (74,748)
-- T1059.004 Unix Shell (71,421)
-- T1082 System Information Discovery (65,133)
-- T1222.002 Linux File Permissions Modification (1,737)
-- T1110 Brute Force (599)
-- T1070 Indicator Removal (294)
-- T1105 Ingress Tool Transfer (211)
+- T1078 Valid Accounts (80,943)
+- T1059.004 Unix Shell (77,026)
+- T1082 System Information Discovery (70,273)
+- T1222.002 Linux File Permissions Modification (1,818)
+- T1110 Brute Force (661)
+- T1070 Indicator Removal (307)
+- T1105 Ingress Tool Transfer (230)
 
 **Top source countries** (unique attacker IPs; location of the attacking machine, usually an infected device)
 
-- China (191 unique IPs)
-- South Korea (146 unique IPs)
-- Brazil (118 unique IPs)
-- United States (110 unique IPs)
-- Russia (109 unique IPs)
+- China (230 unique IPs)
+- South Korea (175 unique IPs)
+- United States (138 unique IPs)
+- Brazil (137 unique IPs)
+- Russia (126 unique IPs)
 
 **Most-tried credentials**
 
-- admin / admin (3,187)
-- root / root (541)
+- admin / admin (3,393)
+- root / root (609)
 - nobody / nobody (365)
-- root / admin (315)
-- root / (blank) (239)
+- root / admin (333)
+- root / (blank) (258)
 
 <details><summary>Daily growth</summary>
 
@@ -82,6 +82,7 @@ _Last updated 2026-11-21 · 16 days of collection · updated automatically every
 | 2026-11-19 | 68297 | 1109 | 65220 | 96 | 34 |
 | 2026-11-20 | 70253 | 1283 | 66714 | 99 | 39 |
 | 2026-11-21 | 75391 | 1449 | 71438 | 100 | 40 |
+| 2026-11-23 | 81655 | 1712 | 77043 | 104 | 41 |
 
 </details>
 <!-- STATS:END -->
