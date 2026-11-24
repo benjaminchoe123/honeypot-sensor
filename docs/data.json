@@ -2,25 +2,25 @@
  "updated": "2026-11-23",
  "days": 18,
  "kpis": {
-  "attacker_sessions": 81655,
-  "attacker_ips": 1712,
-  "countries": 104,
-  "campaigns": 1123,
-  "samples": 41,
+  "attacker_sessions": 81921,
+  "attacker_ips": 1791,
+  "countries": 105,
+  "campaigns": 1124,
+  "samples": 44,
   "techniques": 7,
-  "hands_on": 77043,
-  "logins_ok": 80943,
-  "scans": 7427,
-  "ssh": 74564,
-  "telnet": 7091,
+  "hands_on": 77139,
+  "logins_ok": 81199,
+  "scans": 7613,
+  "ssh": 74784,
+  "telnet": 7137,
   "top_campaign_ips": 126,
-  "connections": 89082
+  "connections": 89534
  },
  "funnel": {
-  "connections": 89082,
-  "scans": 7427,
-  "tried_login": 81655,
-  "shell": 77043
+  "connections": 89534,
+  "scans": 7613,
+  "tried_login": 81921,
+  "shell": 77139
  },
  "daily": [
   {
@@ -107,6 +107,11 @@
    "date": "2026-11-22",
    "sessions": 4134,
    "new_ips": 148
+  },
+  {
+   "date": "2026-11-23",
+   "sessions": 2541,
+   "new_ips": 186
   }
  ],
  "history": [
@@ -247,12 +252,12 @@
   },
   {
    "date": "2026-11-23",
-   "attacker_sessions": 81655,
-   "attacker_ips": 1712,
-   "hands_on": 77043,
-   "countries": 104,
-   "campaigns": 1123,
-   "samples": 41
+   "attacker_sessions": 81921,
+   "attacker_ips": 1791,
+   "hands_on": 77139,
+   "countries": 105,
+   "campaigns": 1124,
+   "samples": 44
   }
  ],
  "countries": [
@@ -260,43 +265,43 @@
    "name": "China",
    "cc": "CN",
    "atlas_id": "156",
-   "ips": 230,
-   "sessions": 2738
+   "ips": 246,
+   "sessions": 2769
   },
   {
    "name": "South Korea",
    "cc": "KR",
    "atlas_id": "410",
-   "ips": 175,
-   "sessions": 1401
+   "ips": 184,
+   "sessions": 1434
   },
   {
    "name": "United States",
    "cc": "US",
    "atlas_id": "840",
-   "ips": 138,
-   "sessions": 4181
+   "ips": 152,
+   "sessions": 4211
   },
   {
    "name": "Brazil",
    "cc": "BR",
    "atlas_id": "076",
-   "ips": 137,
-   "sessions": 283
+   "ips": 141,
+   "sessions": 293
   },
   {
    "name": "Russia",
    "cc": "RU",
    "atlas_id": "643",
-   "ips": 126,
-   "sessions": 190
+   "ips": 135,
+   "sessions": 202
   },
   {
    "name": "India",
    "cc": "IN",
    "atlas_id": "356",
-   "ips": 97,
-   "sessions": 290
+   "ips": 101,
+   "sessions": 298
   },
   {
    "name": "Ukraine",
@@ -310,28 +315,28 @@
    "cc": "NL",
    "atlas_id": "528",
    "ips": 62,
-   "sessions": 56296
+   "sessions": 56304
   },
   {
    "name": "Sweden",
    "cc": "SE",
    "atlas_id": "752",
-   "ips": 50,
-   "sessions": 152
+   "ips": 53,
+   "sessions": 157
   },
   {
    "name": "Taiwan",
    "cc": "TW",
    "atlas_id": "158",
-   "ips": 46,
-   "sessions": 118
+   "ips": 48,
+   "sessions": 120
   },
   {
    "name": "France",
    "cc": "FR",
    "atlas_id": "250",
-   "ips": 45,
-   "sessions": 8667
+   "ips": 46,
+   "sessions": 8688
   },
   {
    "name": "Argentina",
@@ -344,8 +349,8 @@
    "name": "Hong Kong",
    "cc": "HK",
    "atlas_id": "344",
-   "ips": 40,
-   "sessions": 208
+   "ips": 41,
+   "sessions": 210
   },
   {
    "name": "Belgium",
@@ -359,21 +364,21 @@
    "cc": "IQ",
    "atlas_id": "368",
    "ips": 26,
-   "sessions": 39
+   "sessions": 42
   },
   {
    "name": "Germany",
    "cc": "DE",
    "atlas_id": "276",
-   "ips": 17,
-   "sessions": 480
+   "ips": 18,
+   "sessions": 488
   },
   {
    "name": "Uzbekistan",
    "cc": "UZ",
    "atlas_id": "860",
    "ips": 15,
-   "sessions": 16
+   "sessions": 17
   },
   {
    "name": "Vietnam",
@@ -383,6 +388,13 @@
    "sessions": 389
   },
   {
+   "name": "Malaysia",
+   "cc": "MY",
+   "atlas_id": "458",
+   "ips": 14,
+   "sessions": 150
+  },
+  {
    "name": "Chile",
    "cc": "CL",
    "atlas_id": "152",
@@ -390,32 +402,25 @@
    "sessions": 18
   },
   {
-   "name": "Malaysia",
-   "cc": "MY",
-   "atlas_id": "458",
+   "name": "Pakistan",
+   "cc": "PK",
+   "atlas_id": "586",
    "ips": 13,
-   "sessions": 102
+   "sessions": 13
   },
   {
    "name": "Canada",
    "cc": "CA",
    "atlas_id": "124",
-   "ips": 12,
-   "sessions": 22
-  },
-  {
-   "name": "Pakistan",
-   "cc": "PK",
-   "atlas_id": "586",
-   "ips": 12,
-   "sessions": 12
+   "ips": 13,
+   "sessions": 27
   },
   {
    "name": "Thailand",
    "cc": "TH",
    "atlas_id": "764",
    "ips": 12,
-   "sessions": 17
+   "sessions": 18
   },
   {
    "name": "Japan",
@@ -439,13 +444,6 @@
    "sessions": 11
   },
   {
-   "name": "United Kingdom",
-   "cc": "GB",
-   "atlas_id": "826",
-   "ips": 10,
-   "sessions": 850
-  },
-  {
    "name": "Italy",
    "cc": "IT",
    "atlas_id": "380",
@@ -453,39 +451,32 @@
    "sessions": 12
   },
   {
-   "name": "South Africa",
-   "cc": "ZA",
-   "atlas_id": "710",
-   "ips": 8,
-   "sessions": 14
-  },
-  {
-   "name": "Israel",
-   "cc": "IL",
-   "atlas_id": "376",
-   "ips": 8,
-   "sessions": 10
-  },
-  {
-   "name": "Colombia",
-   "cc": "CO",
-   "atlas_id": "170",
-   "ips": 8,
-   "sessions": 9
-  },
-  {
-   "name": "Egypt",
-   "cc": "EG",
-   "atlas_id": "818",
-   "ips": 8,
-   "sessions": 9
+   "name": "United Kingdom",
+   "cc": "GB",
+   "atlas_id": "826",
+   "ips": 10,
+   "sessions": 866
   },
   {
    "name": "Ethiopia",
    "cc": "ET",
    "atlas_id": "231",
-   "ips": 8,
-   "sessions": 17
+   "ips": 9,
+   "sessions": 19
+  },
+  {
+   "name": "Colombia",
+   "cc": "CO",
+   "atlas_id": "170",
+   "ips": 9,
+   "sessions": 10
+  },
+  {
+   "name": "Egypt",
+   "cc": "EG",
+   "atlas_id": "818",
+   "ips": 9,
+   "sessions": 10
   },
   {
    "name": "Netherlands",
@@ -495,25 +486,25 @@
    "sessions": 16
   },
   {
-   "name": "Spain",
-   "cc": "ES",
-   "atlas_id": "724",
-   "ips": 7,
-   "sessions": 64
-  },
-  {
-   "name": "Finland",
-   "cc": "FI",
-   "atlas_id": "246",
-   "ips": 7,
+   "name": "Israel",
+   "cc": "IL",
+   "atlas_id": "376",
+   "ips": 8,
    "sessions": 10
   },
   {
-   "name": "Portugal",
-   "cc": "PT",
-   "atlas_id": "620",
-   "ips": 7,
-   "sessions": 11
+   "name": "Spain",
+   "cc": "ES",
+   "atlas_id": "724",
+   "ips": 8,
+   "sessions": 65
+  },
+  {
+   "name": "South Africa",
+   "cc": "ZA",
+   "atlas_id": "710",
+   "ips": 8,
+   "sessions": 15
   },
   {
    "name": "Andorra",
@@ -530,11 +521,18 @@
    "sessions": 11
   },
   {
-   "name": "Azerbaijan",
-   "cc": "AZ",
-   "atlas_id": "031",
-   "ips": 6,
-   "sessions": 6
+   "name": "Finland",
+   "cc": "FI",
+   "atlas_id": "246",
+   "ips": 7,
+   "sessions": 10
+  },
+  {
+   "name": "Portugal",
+   "cc": "PT",
+   "atlas_id": "620",
+   "ips": 7,
+   "sessions": 11
   },
   {
    "name": "Singapore",
@@ -542,6 +540,27 @@
    "atlas_id": "702",
    "ips": 6,
    "sessions": 187
+  },
+  {
+   "name": "Azerbaijan",
+   "cc": "AZ",
+   "atlas_id": "031",
+   "ips": 6,
+   "sessions": 6
+  },
+  {
+   "name": "Australia",
+   "cc": "AU",
+   "atlas_id": "036",
+   "ips": 5,
+   "sessions": 21
+  },
+  {
+   "name": "Peru",
+   "cc": "PE",
+   "atlas_id": "604",
+   "ips": 5,
+   "sessions": 6
   },
   {
    "name": "Bangladesh",
@@ -558,17 +577,17 @@
    "sessions": 7
   },
   {
-   "name": "Peru",
-   "cc": "PE",
-   "atlas_id": "604",
-   "ips": 5,
-   "sessions": 6
-  },
-  {
    "name": "Morocco",
    "cc": "MA",
    "atlas_id": "504",
    "ips": 5,
+   "sessions": 6
+  },
+  {
+   "name": "Afghanistan",
+   "cc": "AF",
+   "atlas_id": "004",
+   "ips": 4,
    "sessions": 6
   },
   {
@@ -579,11 +598,18 @@
    "sessions": 4
   },
   {
+   "name": "Philippines",
+   "cc": "PH",
+   "atlas_id": "608",
+   "ips": 4,
+   "sessions": 2226
+  },
+  {
    "name": "Kazakhstan",
    "cc": "KZ",
    "atlas_id": "398",
    "ips": 4,
-   "sessions": 4
+   "sessions": 5
   },
   {
    "name": "Venezuela",
@@ -600,18 +626,18 @@
    "sessions": 29
   },
   {
-   "name": "Philippines",
-   "cc": "PH",
-   "atlas_id": "608",
+   "name": "Poland",
+   "cc": "PL",
+   "atlas_id": "616",
    "ips": 4,
-   "sessions": 2226
+   "sessions": 391
   },
   {
-   "name": "Australia",
-   "cc": "AU",
-   "atlas_id": "036",
+   "name": "Lithuania",
+   "cc": "LT",
+   "atlas_id": "440",
    "ips": 4,
-   "sessions": 20
+   "sessions": 6
   },
   {
    "name": "Slovenia",
@@ -628,16 +654,44 @@
    "sessions": 5
   },
   {
-   "name": "Lithuania",
-   "cc": "LT",
-   "atlas_id": "440",
+   "name": "Nigeria",
+   "cc": "NG",
+   "atlas_id": "566",
    "ips": 4,
-   "sessions": 6
+   "sessions": 18
   },
   {
-   "name": "Kenya",
-   "cc": "KE",
-   "atlas_id": "404",
+   "name": "Hungary",
+   "cc": "HU",
+   "atlas_id": "348",
+   "ips": 3,
+   "sessions": 137
+  },
+  {
+   "name": "Switzerland",
+   "cc": "CH",
+   "atlas_id": "756",
+   "ips": 3,
+   "sessions": 395
+  },
+  {
+   "name": "Georgia",
+   "cc": "GE",
+   "atlas_id": "268",
+   "ips": 3,
+   "sessions": 3
+  },
+  {
+   "name": "Czechia",
+   "cc": "CZ",
+   "atlas_id": "203",
+   "ips": 3,
+   "sessions": 3
+  },
+  {
+   "name": "Myanmar",
+   "cc": "MM",
+   "atlas_id": "104",
    "ips": 3,
    "sessions": 3
   },
@@ -649,20 +703,6 @@
    "sessions": 5
   },
   {
-   "name": "Georgia",
-   "cc": "GE",
-   "atlas_id": "268",
-   "ips": 3,
-   "sessions": 3
-  },
-  {
-   "name": "Switzerland",
-   "cc": "CH",
-   "atlas_id": "756",
-   "ips": 3,
-   "sessions": 395
-  },
-  {
    "name": "Panama",
    "cc": "PA",
    "atlas_id": "591",
@@ -670,100 +710,16 @@
    "sessions": 33
   },
   {
-   "name": "Poland",
-   "cc": "PL",
-   "atlas_id": "616",
-   "ips": 3,
-   "sessions": 390
-  },
-  {
-   "name": "Myanmar",
-   "cc": "MM",
-   "atlas_id": "104",
+   "name": "Kenya",
+   "cc": "KE",
+   "atlas_id": "404",
    "ips": 3,
    "sessions": 3
-  },
-  {
-   "name": "Afghanistan",
-   "cc": "AF",
-   "atlas_id": "004",
-   "ips": 3,
-   "sessions": 4
-  },
-  {
-   "name": "Hungary",
-   "cc": "HU",
-   "atlas_id": "348",
-   "ips": 3,
-   "sessions": 137
-  },
-  {
-   "name": "Nigeria",
-   "cc": "NG",
-   "atlas_id": "566",
-   "ips": 2,
-   "sessions": 14
-  },
-  {
-   "name": "Czechia",
-   "cc": "CZ",
-   "atlas_id": "203",
-   "ips": 2,
-   "sessions": 2
-  },
-  {
-   "name": "Cambodia",
-   "cc": "KH",
-   "atlas_id": "116",
-   "ips": 2,
-   "sessions": 2
-  },
-  {
-   "name": "Belarus",
-   "cc": "BY",
-   "atlas_id": "112",
-   "ips": 2,
-   "sessions": 2
-  },
-  {
-   "name": "Costa Rica",
-   "cc": "CR",
-   "atlas_id": "188",
-   "ips": 2,
-   "sessions": 2
   },
   {
    "name": "Zambia",
    "cc": "ZM",
    "atlas_id": "894",
-   "ips": 2,
-   "sessions": 2
-  },
-  {
-   "name": "Togo",
-   "cc": "TG",
-   "atlas_id": "768",
-   "ips": 2,
-   "sessions": 2
-  },
-  {
-   "name": "Bosnia and Herzegovina",
-   "cc": "BA",
-   "atlas_id": "070",
-   "ips": 2,
-   "sessions": 5
-  },
-  {
-   "name": "Lebanon",
-   "cc": "LB",
-   "atlas_id": "422",
-   "ips": 2,
-   "sessions": 8
-  },
-  {
-   "name": "Armenia",
-   "cc": "AM",
-   "atlas_id": "051",
    "ips": 2,
    "sessions": 2
   },
@@ -782,102 +738,67 @@
    "sessions": 3
   },
   {
+   "name": "Costa Rica",
+   "cc": "CR",
+   "atlas_id": "188",
+   "ips": 2,
+   "sessions": 2
+  },
+  {
+   "name": "Lebanon",
+   "cc": "LB",
+   "atlas_id": "422",
+   "ips": 2,
+   "sessions": 8
+  },
+  {
+   "name": "Belarus",
+   "cc": "BY",
+   "atlas_id": "112",
+   "ips": 2,
+   "sessions": 2
+  },
+  {
    "name": "Senegal",
    "cc": "SN",
    "atlas_id": "686",
    "ips": 2,
-   "sessions": 4
+   "sessions": 5
   },
   {
-   "name": "Moldova",
-   "cc": "MD",
-   "atlas_id": "498",
-   "ips": 1,
-   "sessions": 1
+   "name": "Cambodia",
+   "cc": "KH",
+   "atlas_id": "116",
+   "ips": 2,
+   "sessions": 3
   },
   {
-   "name": "Zimbabwe",
-   "cc": "ZW",
-   "atlas_id": "716",
-   "ips": 1,
-   "sessions": 1
+   "name": "Armenia",
+   "cc": "AM",
+   "atlas_id": "051",
+   "ips": 2,
+   "sessions": 2
+  },
+  {
+   "name": "Togo",
+   "cc": "TG",
+   "atlas_id": "768",
+   "ips": 2,
+   "sessions": 2
+  },
+  {
+   "name": "Bosnia and Herzegovina",
+   "cc": "BA",
+   "atlas_id": "070",
+   "ips": 2,
+   "sessions": 5
   },
   {
    "name": "Ecuador",
    "cc": "EC",
    "atlas_id": "218",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "Cabo Verde",
-   "cc": "CV",
-   "atlas_id": "132",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "New Zealand",
-   "cc": "NZ",
-   "atlas_id": "554",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "Latvia",
-   "cc": "LV",
-   "atlas_id": "428",
-   "ips": 1,
-   "sessions": 4
-  },
-  {
-   "name": "Bhutan",
-   "cc": "BT",
-   "atlas_id": "064",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "Rwanda",
-   "cc": "RW",
-   "atlas_id": "646",
-   "ips": 1,
+   "ips": 2,
    "sessions": 2
-  },
-  {
-   "name": "Uruguay",
-   "cc": "UY",
-   "atlas_id": "858",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "Nepal",
-   "cc": "NP",
-   "atlas_id": "524",
-   "ips": 1,
-   "sessions": 2
-  },
-  {
-   "name": "Palestine",
-   "cc": "PS",
-   "atlas_id": "275",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "Estonia",
-   "cc": "EE",
-   "atlas_id": "233",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "Angola",
-   "cc": "AO",
-   "atlas_id": "024",
-   "ips": 1,
-   "sessions": 8
   },
   {
    "name": "Ivory Coast",
@@ -887,79 +808,16 @@
    "sessions": 2
   },
   {
-   "name": "Malta",
-   "cc": "MT",
-   "atlas_id": "470",
+   "name": "Angola",
+   "cc": "AO",
+   "atlas_id": "024",
    "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "Malawi",
-   "cc": "MW",
-   "atlas_id": "454",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "Mauritius",
-   "cc": "MU",
-   "atlas_id": "480",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "Serbia",
-   "cc": "RS",
-   "atlas_id": "688",
-   "ips": 1,
-   "sessions": 2
-  },
-  {
-   "name": "Austria",
-   "cc": "AT",
-   "atlas_id": "040",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "Burkina Faso",
-   "cc": "BF",
-   "atlas_id": "854",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "Puerto Rico",
-   "cc": "PR",
-   "atlas_id": "630",
-   "ips": 1,
-   "sessions": 2
-  },
-  {
-   "name": "Gabon",
-   "cc": "GA",
-   "atlas_id": "266",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "United Arab Emirates",
-   "cc": "AE",
-   "atlas_id": "784",
-   "ips": 1,
-   "sessions": 2
+   "sessions": 8
   },
   {
    "name": "Romania",
    "cc": "RO",
    "atlas_id": "642",
-   "ips": 1,
-   "sessions": 1
-  },
-  {
-   "name": "Uganda",
-   "cc": "UG",
-   "atlas_id": "800",
    "ips": 1,
    "sessions": 1
   },
@@ -971,9 +829,30 @@
    "sessions": 1
   },
   {
-   "name": "Libya",
-   "cc": "LY",
-   "atlas_id": "434",
+   "name": "Moldova",
+   "cc": "MD",
+   "atlas_id": "498",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Malta",
+   "cc": "MT",
+   "atlas_id": "470",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Austria",
+   "cc": "AT",
+   "atlas_id": "040",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Nepal",
+   "cc": "NP",
+   "atlas_id": "524",
    "ips": 1,
    "sessions": 2
   },
@@ -983,55 +862,188 @@
    "atlas_id": "426",
    "ips": 1,
    "sessions": 1
+  },
+  {
+   "name": "Malawi",
+   "cc": "MW",
+   "atlas_id": "454",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "New Zealand",
+   "cc": "NZ",
+   "atlas_id": "554",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Zimbabwe",
+   "cc": "ZW",
+   "atlas_id": "716",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Uruguay",
+   "cc": "UY",
+   "atlas_id": "858",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Libya",
+   "cc": "LY",
+   "atlas_id": "434",
+   "ips": 1,
+   "sessions": 2
+  },
+  {
+   "name": "Latvia",
+   "cc": "LV",
+   "atlas_id": "428",
+   "ips": 1,
+   "sessions": 4
+  },
+  {
+   "name": "Brunei",
+   "cc": "BN",
+   "atlas_id": "096",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Cabo Verde",
+   "cc": "CV",
+   "atlas_id": "132",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Uganda",
+   "cc": "UG",
+   "atlas_id": "800",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Mauritius",
+   "cc": "MU",
+   "atlas_id": "480",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Gabon",
+   "cc": "GA",
+   "atlas_id": "266",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Puerto Rico",
+   "cc": "PR",
+   "atlas_id": "630",
+   "ips": 1,
+   "sessions": 2
+  },
+  {
+   "name": "Bhutan",
+   "cc": "BT",
+   "atlas_id": "064",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Serbia",
+   "cc": "RS",
+   "atlas_id": "688",
+   "ips": 1,
+   "sessions": 2
+  },
+  {
+   "name": "Estonia",
+   "cc": "EE",
+   "atlas_id": "233",
+   "ips": 1,
+   "sessions": 2
+  },
+  {
+   "name": "United Arab Emirates",
+   "cc": "AE",
+   "atlas_id": "784",
+   "ips": 1,
+   "sessions": 2
+  },
+  {
+   "name": "Burkina Faso",
+   "cc": "BF",
+   "atlas_id": "854",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Palestine",
+   "cc": "PS",
+   "atlas_id": "275",
+   "ips": 1,
+   "sessions": 1
+  },
+  {
+   "name": "Rwanda",
+   "cc": "RW",
+   "atlas_id": "646",
+   "ips": 1,
+   "sessions": 2
   }
  ],
  "techniques": [
   {
    "id": "T1078",
    "name": "Valid Accounts",
-   "sessions": 80943,
+   "sessions": 81199,
    "meaning": "Logged in with a real (here: default or guessed) username and password",
    "common": true
   },
   {
    "id": "T1059.004",
    "name": "Unix Shell",
-   "sessions": 77026,
+   "sessions": 77122,
    "meaning": "Ran commands in a Linux shell",
    "common": true
   },
   {
    "id": "T1082",
    "name": "System Information Discovery",
-   "sessions": 70273,
+   "sessions": 70300,
    "meaning": "Checked the CPU, OS or device type, usually to pick the right malware build",
    "common": true
   },
   {
    "id": "T1222.002",
    "name": "Linux File Permissions Modification",
-   "sessions": 1818,
+   "sessions": 1822,
    "meaning": "Changed file permissions, usually to make a dropped file executable",
    "common": false
   },
   {
    "id": "T1110",
    "name": "Brute Force",
-   "sessions": 661,
+   "sessions": 671,
    "meaning": "Kept guessing passwords from the same IP",
    "common": false
   },
   {
    "id": "T1070",
    "name": "Indicator Removal",
-   "sessions": 307,
+   "sessions": 310,
    "meaning": "Deleted files or shell history to cover its tracks",
    "common": false
   },
   {
    "id": "T1105",
    "name": "Ingress Tool Transfer",
-   "sessions": 230,
+   "sessions": 233,
    "meaning": "Pulled a file onto the machine from an outside server",
    "common": false
   }
@@ -1040,7 +1052,7 @@
   {
    "id": "ed7cfce5",
    "ips": 126,
-   "sessions": 1344,
+   "sessions": 1345,
    "first_seen": "2026-11-06",
    "last_seen": "2026-11-23",
    "tags": [
@@ -1051,7 +1063,7 @@
   {
    "id": "7109427c",
    "ips": 125,
-   "sessions": 1285,
+   "sessions": 1286,
    "first_seen": "2026-11-06",
    "last_seen": "2026-11-23",
    "tags": [
@@ -1106,8 +1118,8 @@
   },
   {
    "id": "6fa4c8ac",
-   "ips": 19,
-   "sessions": 21,
+   "ips": 20,
+   "sessions": 22,
    "first_seen": "2026-11-06",
    "last_seen": "2026-11-23",
    "tags": [
@@ -1169,7 +1181,7 @@
   {
    "sha256": "39be6853a8204ce6455a373a6ffb4cb4672d4a62d90be69f7d6eeb66cda10b96",
    "first_seen": "2026-11-10",
-   "sessions": 60,
+   "sessions": 62,
    "ips": 1,
    "size": 3241,
    "kind": "download"
@@ -1177,7 +1189,7 @@
   {
    "sha256": "3674a103804cac96027fe1cf62aaab4948c1d547d1c885542177a263103b4260",
    "first_seen": "2026-11-10",
-   "sessions": 60,
+   "sessions": 62,
    "ips": 1,
    "size": 193352,
    "kind": "download"
@@ -1185,7 +1197,7 @@
   {
    "sha256": "5d9e4bdee8c8fcb0b534f6336ecace4696d8ed3038de42a969c6e037e41d1de5",
    "first_seen": "2026-11-14",
-   "sessions": 50,
+   "sessions": 52,
    "ips": 1,
    "size": 148428,
    "kind": "download"
@@ -1233,7 +1245,7 @@
   {
    "sha256": "b28233f84b6022af819adc47e0763ad76ec39d057e6b59dcc219a97e63f0cbd0",
    "first_seen": "2026-11-19",
-   "sessions": 6,
+   "sessions": 7,
    "ips": 1,
    "size": 255652,
    "kind": "download"
@@ -1316,6 +1328,14 @@
    "sessions": 2,
    "ips": 1,
    "size": 196288,
+   "kind": "download"
+  },
+  {
+   "sha256": "a509a971533ed05fff3536583fb6e39d24e98472aafa2c06da0eea6df6617e07",
+   "first_seen": "2026-11-23",
+   "sessions": 2,
+   "ips": 1,
+   "size": 1903,
    "kind": "download"
   },
   {
@@ -1447,22 +1467,38 @@
    "kind": "upload"
   },
   {
-   "sha256": "a509a971533ed05fff3536583fb6e39d24e98472aafa2c06da0eea6df6617e07",
+   "sha256": "b18ef28c6c0ab3b74f2eb936fe611ecab8ac0527d0ce9da11eb029c69eb4b32a",
    "first_seen": "2026-11-23",
    "sessions": 1,
    "ips": 1,
-   "size": 1903,
+   "size": 164272,
+   "kind": "download"
+  },
+  {
+   "sha256": "a44068e65c02a26e7468dbabb18f8b3dac8c0af79f87a18b74f08f6fee3cb13f",
+   "first_seen": "2026-11-23",
+   "sessions": 1,
+   "ips": 1,
+   "size": 210936,
+   "kind": "download"
+  },
+  {
+   "sha256": "3fec53dd698970ed0dec1ce1557818403acc6e0044df1a0f424f14fc45e7fe23",
+   "first_seen": "2026-11-23",
+   "sessions": 1,
+   "ips": 1,
+   "size": 182244,
    "kind": "download"
   }
  ],
  "credentials": [
   [
    "admin / admin",
-   3393
+   3406
   ],
   [
    "root / root",
-   609
+   619
   ],
   [
    "nobody / nobody",
@@ -1474,7 +1510,7 @@
   ],
   [
    "root / (blank)",
-   258
+   261
   ],
   [
    "root / 123456",
@@ -1490,11 +1526,11 @@
   ],
   [
    "root / 12345",
-   154
+   155
   ],
   [
    "support / support",
-   151
+   152
   ]
  ]
 }
